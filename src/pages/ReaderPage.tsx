@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import BookView from "../components/BookView/BookView";
+import BookView from "../components/BookView";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setActiveBook } from "../store/booksSlice";
 import { saveActiveBookId } from "../utils/bookStorage";

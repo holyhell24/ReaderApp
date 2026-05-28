@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import EpubReader from "../EpubReader/EpubReader";
+import EpubReader from "./components/EpubReader";
 import type { BookViewProps } from "./types";
 
 export default function BookView({ book }: BookViewProps) {

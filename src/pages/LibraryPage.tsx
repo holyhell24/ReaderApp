@@ -1,6 +1,6 @@
 import { useRef, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import BookListItem from "../components/BookListItem/BookListItem";
+import BookListItem from "../components/BookListItem";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addBook, setActiveBook, updateBook } from "../store/booksSlice";
 import {
