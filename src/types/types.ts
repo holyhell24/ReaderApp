@@ -6,7 +6,7 @@ export interface BookMetadata {
 
 export interface Book extends BookMetadata {
   id: string;
-  url: string;
+  url: string | ArrayBuffer;
 }
 
 export interface BooksState {

@@ -1,6 +1,6 @@
 import { useRef, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import BookListItem from "../components/BookListItem";
+import BookListItem from "../components/BookListItem/BookListItem";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addBook, setActiveBook, updateBook } from "../store/booksSlice";
 import {
@@ -30,12 +30,12 @@ export default function LibraryPage() {
     }
 
     const id = crypto.randomUUID();
-    const url = URL.createObjectURL(file);
+    const url = await file.arrayBuffer();
     const title = file.name.replace(/\.epub$/i, "");
 
     dispatch(addBook({ id, url, title }));
     void saveActiveBookId(id);
-    void saveBook(id, file, { title });
+    void saveBook(id, file, { title }, url);
 
     const metadata = await parseEpubMetadata(file);
     dispatch(updateBook({ id, ...metadata }));

@@ -65,13 +65,12 @@ function getAllFromStore(store: IDBObjectStore): Promise<StoredBook[]> {
 }
 
 function storedBookToBook(stored: StoredBook): Book {
-  const blob = new Blob([stored.data], { type: "application/epub+zip" });
   return {
     id: stored.id,
     title: stored.title,
     author: stored.author,
     description: stored.description,
-    url: URL.createObjectURL(blob),
+    url: stored.data,
   };
 }
 
@@ -93,6 +92,7 @@ export async function saveBook(
   id: string,
   file: File,
   metadata: BookMetadata,
+  data: ArrayBuffer,
 ): Promise<void> {
   const stored: StoredBook = {
     id,
@@ -100,7 +100,7 @@ export async function saveBook(
     title: metadata.title,
     author: metadata.author,
     description: metadata.description,
-    data: await file.arrayBuffer(),
+    data,
   };
 
   await runTransaction("readwrite", (store) => putInStore(store, stored));
