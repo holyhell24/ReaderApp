@@ -3,9 +3,15 @@ import { Navigate, useParams } from "react-router-dom";
 import BookView from "../components/BookView";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setActiveBook } from "../store/booksSlice";
+import type { ReaderTheme } from "../theme";
 import { saveActiveBookId } from "../utils/bookStorage";
 
-export default function ReaderPage() {
+interface ReaderPageProps {
+  onThemeChange: (theme: ReaderTheme) => void;
+  theme: ReaderTheme;
+}
+
+export default function ReaderPage({ onThemeChange, theme }: ReaderPageProps) {
   const { bookId } = useParams<{ bookId: string }>();
   const dispatch = useAppDispatch();
   const book = useAppSelector((state) =>
@@ -23,5 +29,5 @@ export default function ReaderPage() {
     return <Navigate to="/" replace />;
   }
 
-  return <BookView book={book} />;
+  return <BookView book={book} onThemeChange={onThemeChange} theme={theme} />;
 }
