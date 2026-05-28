@@ -1,4 +1,4 @@
-import { useCallback, useState, type ComponentProps } from "react";
+import { useCallback, type ComponentProps } from "react";
 import { ReactReader } from "react-reader";
 import { readerStyles } from "./styles";
 import type { EpubReaderProps } from "./types";
@@ -23,9 +23,12 @@ function applyChapterStyles(rendition: ReaderRendition) {
   });
 }
 
-export default function EpubReader({ url }: EpubReaderProps) {
-  const [location, setLocation] = useState<string | number>(0);
-
+export default function EpubReader({
+  location,
+  onLocationChange,
+  onTocChange,
+  url,
+}: EpubReaderProps) {
   const handleRendition = useCallback(
     (nextRendition: ReaderRendition) => {
       applyChapterStyles(nextRendition);
@@ -38,10 +41,11 @@ export default function EpubReader({ url }: EpubReaderProps) {
       <ReactReader
         url={url}
         location={location}
-        locationChanged={setLocation}
+        locationChanged={onLocationChange}
         showToc={false}
         readerStyles={readerStyles}
         getRendition={handleRendition}
+        tocChanged={onTocChange}
       />
     </div>
   );
