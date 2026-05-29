@@ -1,7 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DrawerType } from "../../enums";
-import soundScenesData from "../../data/soundScenes.json";
 import {
   readerThemes,
   type ReaderSettings,
@@ -14,8 +13,6 @@ import Settings from "./components/Drawers/Settings";
 import Sounds from "./components/Drawers/Sounds";
 import EpubReader from "./components/EpubReader";
 import type { BookViewProps, ReaderTocItem } from "./types";
-
-const soundScenes = soundScenesData as SoundScene[];
 
 interface TocMatch {
   href: string;
@@ -68,7 +65,7 @@ function findTocMatch(tocItems: TocMatch[], href: string): TocMatch | null {
   );
 }
 
-function findSoundScene(tocItem: TocMatch | null) {
+function findSoundScene(tocItem: TocMatch | null, soundScenes: SoundScene[]) {
   if (!tocItem) return null;
 
   const labelMatch = tocItem.label.match(/^(.*?)\s*[-–—]\s*(\d+)$/);
@@ -110,15 +107,16 @@ export default function BookView({
     () => loadBookLocation(book.id) ?? 0,
   );
   const [currentReaderHref, setCurrentReaderHref] = useState<string | null>(null);
+  const [soundScenes, setSoundScenes] = useState<SoundScene[]>([]);
   const [toc, setToc] = useState<ReaderTocItem[]>([]);
   const themeColors = readerThemes[theme];
   const tocMatches = useMemo(() => flattenToc(toc), [toc]);
   const activeSoundPreset = useMemo(() => {
     if (!currentReaderHref) return null;
 
-    return findSoundScene(findTocMatch(tocMatches, currentReaderHref))
+    return findSoundScene(findTocMatch(tocMatches, currentReaderHref), soundScenes)
       ?.soundPreset ?? null;
-  }, [currentReaderHref, tocMatches]);
+  }, [currentReaderHref, soundScenes, tocMatches]);
 
   const closeDrawer = () => setDrawerType(null);
 
@@ -137,11 +135,41 @@ export default function BookView({
   };
 
   const handleLocationChange = (location: string) => {
+    setReaderLocation(location);
     saveBookLocation(book.id, location);
   };
 
   const handleCurrentHrefChange = useCallback((href: string) => {
     setCurrentReaderHref(href);
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadSoundScenes() {
+      try {
+        const response = await fetch("/soundScenes/scene.json", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setSoundScenes([]);
+          return;
+        }
+
+        const data = (await response.json()) as SoundScene[];
+        setSoundScenes(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+
+        console.warn("Unable to load sound scenes", error);
+        setSoundScenes([]);
+      }
+    }
+
+    void loadSoundScenes();
+
+    return () => controller.abort();
   }, []);
 
   return (

@@ -136,7 +136,7 @@ export const soundPresets: SoundPreset[] = [
   {
     label: "Temple",
     volumes: {
-      [AmbienceType.Temple]: 0.25,
+      [AmbienceType.Temple]: 0.1,
       [AmbienceType.SingingBowl]: 0.1,
       [AmbienceType.Campfire]: 0.1,
     },

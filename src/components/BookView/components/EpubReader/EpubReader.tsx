@@ -2,8 +2,10 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ComponentProps,
+  type CSSProperties,
 } from "react";
 import type Contents from "epubjs/types/contents";
 import type { Location } from "epubjs/types/rendition";
@@ -71,12 +73,14 @@ function applyContentStyles(
 
   documentElement.style.setProperty("background", colors.background, "important");
   documentElement.style.setProperty("color", colors.foreground, "important");
+  documentElement.style.setProperty("min-height", "100%", "important");
   body.style.setProperty("background", colors.background, "important");
   body.style.setProperty("color", colors.foreground, "important");
+  body.style.setProperty("min-height", "100%", "important");
 
   void contents.addStylesheetRules(
     {
-      "body, html, #root, .calibre, .chapter, section, article, main": {
+      "body, html, #root, .calibre, .chapter, section, article, main, div": {
         background: `${colors.background} !important`,
         color: `${colors.foreground} !important`,
         fontFamily: rules.body.fontFamily,
@@ -85,6 +89,7 @@ function applyContentStyles(
         lineHeight: rules.body.lineHeight,
       },
       "body *": {
+        background: "transparent !important",
         backgroundColor: "transparent !important",
         color: `${colors.foreground} !important`,
       },
@@ -122,6 +127,14 @@ function updateTheme(
   rendition.themes?.override("font-size", fontSize, true);
   rendition.themes?.override("letter-spacing", interval.cssValue, true);
   rendition.themes?.override("line-height", lineHeight.cssValue, true);
+  applyRenditionContentStyles(rendition, theme, settings);
+}
+
+function applyRenditionContentStyles(
+  rendition: ReaderRendition,
+  theme: ReaderTheme,
+  settings: ReaderSettings,
+) {
   const currentContents = rendition.getContents();
 
   if (Array.isArray(currentContents)) {
@@ -176,7 +189,15 @@ export default function EpubReader({
 }: EpubReaderProps) {
   const colors = readerThemes[theme];
   const [rendition, setRendition] = useState<ReaderRendition | null>(null);
+  const themeRef = useRef(theme);
+  const settingsRef = useRef(settings);
   const isChaptersView = settings.view === ReaderView.Chapters;
+
+  useEffect(() => {
+    themeRef.current = theme;
+    settingsRef.current = settings;
+  }, [settings, theme]);
+
   const epubOptions = useMemo<ReaderEpubOptions>(() => {
     if (settings.view === ReaderView.Scrolling) {
       return {
@@ -259,10 +280,23 @@ export default function EpubReader({
         if (href) {
           onCurrentHrefChange(href);
         }
+
+        applyRenditionContentStyles(
+          nextRendition,
+          themeRef.current,
+          settingsRef.current,
+        );
+      });
+      nextRendition.on("rendered", () => {
+        applyRenditionContentStyles(
+          nextRendition,
+          themeRef.current,
+          settingsRef.current,
+        );
       });
       nextRendition.hooks.content.register(addFontStylesheet);
       nextRendition.hooks.content.register((contents: Contents) => {
-        applyContentStyles(contents, theme, settings);
+        applyContentStyles(contents, themeRef.current, settingsRef.current);
       });
       applyChapterStyles(nextRendition, theme, settings);
       setRendition(nextRendition);
@@ -273,6 +307,7 @@ export default function EpubReader({
 
   useEffect(() => {
     if (rendition) {
+      applyChapterStyles(rendition, theme, settings);
       updateTheme(rendition, theme, settings);
     }
   }, [rendition, settings, theme]);
@@ -289,11 +324,13 @@ export default function EpubReader({
     <div
       className="epub-reader h-full w-full"
       style={{
+        "--reader-control-color": colors.foreground,
         backgroundColor: colors.background,
         color: colors.foreground,
-      }}
+      } as CSSProperties}
     >
       <ReactReader
+        key={`${settings.view}-${theme}`}
         url={url}
         location={location}
         locationChanged={onLocationChange}
