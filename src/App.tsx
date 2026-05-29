@@ -5,9 +5,13 @@ import ReaderPage from "./pages/ReaderPage";
 import { useAppDispatch } from "./store/hooks";
 import { hydrateBooks } from "./store/booksSlice";
 import {
+  DEFAULT_READER_SETTINGS,
+  loadReaderSettings,
   loadReaderTheme,
   readerThemes,
+  saveReaderSettings,
   saveReaderTheme,
+  type ReaderSettings,
   type ReaderTheme,
 } from "./theme";
 import { loadLibrary } from "./utils/bookStorage";
@@ -19,11 +23,26 @@ function App() {
   const [readerTheme, setReaderTheme] = useState<ReaderTheme>(() =>
     loadReaderTheme(),
   );
+  const [readerSettings, setReaderSettings] = useState<ReaderSettings>(() =>
+    loadReaderSettings(),
+  );
   const themeColors = readerThemes[readerTheme];
 
   const handleThemeChange = (theme: ReaderTheme) => {
     setReaderTheme(theme);
     saveReaderTheme(theme);
+  };
+
+  const handleSettingsChange = (settings: ReaderSettings) => {
+    setReaderSettings(settings);
+    saveReaderSettings(settings);
+  };
+
+  const handleSettingsReset = () => {
+    setReaderTheme("light");
+    saveReaderTheme("light");
+    setReaderSettings(DEFAULT_READER_SETTINGS);
+    saveReaderSettings(DEFAULT_READER_SETTINGS);
   };
 
   useEffect(() => {
@@ -83,7 +102,10 @@ function App() {
           path="/read/:bookId"
           element={
             <ReaderPage
+              onSettingsChange={handleSettingsChange}
+              onSettingsReset={handleSettingsReset}
               onThemeChange={handleThemeChange}
+              settings={readerSettings}
               theme={readerTheme}
             />
           }

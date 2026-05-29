@@ -1,7 +1,20 @@
-import { readerThemes, type ReaderTheme } from "../../../../theme";
+import {
+  readerFonts,
+  readerIntervals,
+  readerLineHeights,
+  readerThemes,
+  type ReaderSettings,
+  type ReaderTheme,
+} from "../../../../theme";
 
-export function themeRules(theme: ReaderTheme) {
+export function themeRules(theme: ReaderTheme, settings: ReaderSettings) {
   const colors = readerThemes[theme];
+  const font = readerFonts[settings.fontFamily];
+  const interval =
+    readerIntervals[
+      settings.fontFamily === "fast_serif" ? "tight" : settings.interval
+    ];
+  const lineHeight = readerLineHeights[settings.lineHeight];
 
   return {
     a: {
@@ -10,6 +23,10 @@ export function themeRules(theme: ReaderTheme) {
     body: {
       background: `${colors.background} !important`,
       color: `${colors.foreground} !important`,
+      fontFamily: `${font.cssValue} !important`,
+      fontSize: `${settings.fontSize}px !important`,
+      letterSpacing: `${interval.cssValue} !important`,
+      lineHeight: `${lineHeight.cssValue} !important`,
     },
     h1: {
       background: "transparent !important",
@@ -25,9 +42,15 @@ export function themeRules(theme: ReaderTheme) {
     },
     html: {
       background: `${colors.background} !important`,
+      fontFamily: `${font.cssValue} !important`,
+      fontSize: `${settings.fontSize}px !important`,
+      letterSpacing: `${interval.cssValue} !important`,
+      lineHeight: `${lineHeight.cssValue} !important`,
     },
     p: {
       color: `${colors.foreground} !important`,
+      letterSpacing: `${interval.cssValue} !important`,
+      lineHeight: `${lineHeight.cssValue} !important`,
     },
   };
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { DrawerType } from "../../enums";
-import { readerThemes, type ReaderTheme } from "../../theme";
+import { readerThemes, type ReaderSettings, type ReaderTheme } from "../../theme";
 import { loadBookLocation, saveBookLocation } from "../../utils/bookStorage";
 import Chapters from "./components/Drawers/Chapters";
 import Settings from "./components/Drawers/Settings";
@@ -10,7 +10,10 @@ import type { BookViewProps, ReaderTocItem } from "./types";
 
 export default function BookView({
   book,
+  onSettingsChange,
+  onSettingsReset,
   onThemeChange,
+  settings,
   theme,
 }: BookViewProps) {
   const [drawerType, setDrawerType] = useState<DrawerType | null>(null);
@@ -30,6 +33,10 @@ export default function BookView({
 
   const handleThemeChange = (nextTheme: ReaderTheme) => {
     onThemeChange(nextTheme);
+  };
+
+  const handleSettingsChange = (nextSettings: ReaderSettings) => {
+    onSettingsChange(nextSettings);
   };
 
   const handleLocationChange = (location: string) => {
@@ -114,6 +121,7 @@ export default function BookView({
             location={readerLocation}
             onLocationChange={handleLocationChange}
             onTocChange={setToc}
+            settings={settings}
             theme={theme}
             url={book.url}
           />
@@ -147,7 +155,10 @@ export default function BookView({
           />
           <Settings
             onClose={closeDrawer}
+            onSettingsChange={handleSettingsChange}
+            onSettingsReset={onSettingsReset}
             onThemeChange={handleThemeChange}
+            settings={settings}
             theme={theme}
             themeColors={themeColors}
           />

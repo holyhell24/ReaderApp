@@ -1,9 +1,12 @@
 import type { Book } from "../../types/types";
-import type { ReaderTheme } from "../../theme";
+import type { ReaderSettings, ReaderTheme } from "../../theme";
 
 export interface BookViewProps {
   book: Book;
+  onSettingsChange: (settings: ReaderSettings) => void;
+  onSettingsReset: () => void;
   onThemeChange: (theme: ReaderTheme) => void;
+  settings: ReaderSettings;
   theme: ReaderTheme;
 }
 
