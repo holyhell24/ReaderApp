@@ -6,6 +6,7 @@ import {
   type ComponentProps,
 } from "react";
 import type Contents from "epubjs/types/contents";
+import type { Location } from "epubjs/types/rendition";
 import { EpubViewStyle, ReactReader } from "react-reader";
 import {
   readerFonts,
@@ -26,6 +27,16 @@ type ReaderRendition = Parameters<
   NonNullable<ComponentProps<typeof ReactReader>["getRendition"]>
 >[0];
 type ReaderEpubOptions = ComponentProps<typeof ReactReader>["epubOptions"];
+type ReaderLocationPayload =
+  | Location
+  | {
+      href?: string;
+      start?: {
+        href?: string;
+      };
+    }
+  | null
+  | undefined;
 
 const FONT_STYLESHEET_URL =
   "https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Spectral:wght@400;500;600;700&display=swap";
@@ -146,8 +157,17 @@ function applyChapterStyles(
   });
 }
 
+function getHrefFromLocation(location: ReaderLocationPayload): string | null {
+  if (!location) return null;
+
+  if (location.start?.href) return location.start.href;
+
+  return "href" in location ? location.href ?? null : null;
+}
+
 export default function EpubReader({
   location,
+  onCurrentHrefChange,
   onLocationChange,
   onTocChange,
   settings,
@@ -233,6 +253,13 @@ export default function EpubReader({
 
   const handleRendition = useCallback(
     (nextRendition: ReaderRendition) => {
+      nextRendition.on("relocated", (currentLocation: Location) => {
+        const href = getHrefFromLocation(currentLocation);
+
+        if (href) {
+          onCurrentHrefChange(href);
+        }
+      });
       nextRendition.hooks.content.register(addFontStylesheet);
       nextRendition.hooks.content.register((contents: Contents) => {
         applyContentStyles(contents, theme, settings);
@@ -241,7 +268,7 @@ export default function EpubReader({
       setRendition(nextRendition);
       updateTheme(nextRendition, theme, settings);
     },
-    [settings, theme],
+    [onCurrentHrefChange, settings, theme],
   );
 
   useEffect(() => {

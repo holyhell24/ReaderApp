@@ -1,17 +1,101 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DrawerType } from "../../enums";
+import soundScenesData from "../../data/soundScenes.json";
 import {
   readerThemes,
   type ReaderSettings,
   type ReaderTheme,
 } from "../../theme";
+import type { SoundScene } from "../../types/types";
 import { loadBookLocation, saveBookLocation } from "../../utils/bookStorage";
 import Chapters from "./components/Drawers/Chapters";
 import Settings from "./components/Drawers/Settings";
 import Sounds from "./components/Drawers/Sounds";
 import EpubReader from "./components/EpubReader";
 import type { BookViewProps, ReaderTocItem } from "./types";
+
+const soundScenes = soundScenesData as SoundScene[];
+
+interface TocMatch {
+  href: string;
+  index: number;
+  label: string;
+  parentLabel?: string;
+}
+
+function getHrefPath(href: string): string {
+  return href.split("#")[0].split("?")[0].toLowerCase();
+}
+
+function normalizeSceneText(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function flattenToc(items: ReaderTocItem[], parentLabel?: string): TocMatch[] {
+  return items.flatMap((item) => {
+    if (item.subitems?.length) {
+      return flattenToc(item.subitems, item.label);
+    }
+
+    return [
+      {
+        href: item.href,
+        index: 0,
+        label: item.label,
+        parentLabel,
+      },
+    ];
+  }).map((item, index) => ({
+    ...item,
+    index,
+  }));
+}
+
+function findTocMatch(tocItems: TocMatch[], href: string): TocMatch | null {
+  const hrefPath = getHrefPath(href);
+  const exactMatch = tocItems.find((item) => item.href === href);
+
+  if (exactMatch) return exactMatch;
+
+  return (
+    tocItems.find((item) => getHrefPath(item.href) === hrefPath) ??
+    tocItems.find((item) => hrefPath.endsWith(getHrefPath(item.href))) ??
+    null
+  );
+}
+
+function findSoundScene(tocItem: TocMatch | null) {
+  if (!tocItem) return null;
+
+  const labelMatch = tocItem.label.match(/^(.*?)\s*[-–—]\s*(\d+)$/);
+  const subchapterFromLabel = tocItem.label.match(/\d+/)?.[0];
+  const chapter = labelMatch?.[1] ?? tocItem.parentLabel ?? tocItem.label;
+  const subchapter = Number(labelMatch?.[2] ?? subchapterFromLabel ?? 1);
+
+  if (chapter && Number.isFinite(subchapter)) {
+    const scene = soundScenes.find(
+      (item) =>
+        normalizeSceneText(item.chapter) === normalizeSceneText(chapter) &&
+        item.subchapter === subchapter,
+    );
+
+    if (scene) return scene;
+  }
+
+  const wholeChapterScene = soundScenes.find(
+    (item) =>
+      normalizeSceneText(item.chapter) === normalizeSceneText(tocItem.label) &&
+      item.subchapter === 1,
+  );
+
+  if (wholeChapterScene) return wholeChapterScene;
+
+  return soundScenes[tocItem.index] ?? null;
+}
 
 export default function BookView({
   book,
@@ -25,8 +109,16 @@ export default function BookView({
   const [readerLocation, setReaderLocation] = useState<string | number>(
     () => loadBookLocation(book.id) ?? 0,
   );
+  const [currentReaderHref, setCurrentReaderHref] = useState<string | null>(null);
   const [toc, setToc] = useState<ReaderTocItem[]>([]);
   const themeColors = readerThemes[theme];
+  const tocMatches = useMemo(() => flattenToc(toc), [toc]);
+  const activeSoundPreset = useMemo(() => {
+    if (!currentReaderHref) return null;
+
+    return findSoundScene(findTocMatch(tocMatches, currentReaderHref))
+      ?.soundPreset ?? null;
+  }, [currentReaderHref, tocMatches]);
 
   const closeDrawer = () => setDrawerType(null);
 
@@ -47,6 +139,10 @@ export default function BookView({
   const handleLocationChange = (location: string) => {
     saveBookLocation(book.id, location);
   };
+
+  const handleCurrentHrefChange = useCallback((href: string) => {
+    setCurrentReaderHref(href);
+  }, []);
 
   return (
     <main
@@ -92,7 +188,11 @@ export default function BookView({
             )}
           </div>
         </div>
-        <Sounds themeColors={themeColors} />
+        <Sounds
+          sceneSoundPreset={activeSoundPreset}
+          sceneSoundPresetKey={currentReaderHref}
+          themeColors={themeColors}
+        />
         <div className="flex justify-end gap-4">
           <button
             type="button"
@@ -128,6 +228,7 @@ export default function BookView({
           <EpubReader
             key={`${book.id}-${settings.view}`}
             location={readerLocation}
+            onCurrentHrefChange={handleCurrentHrefChange}
             onLocationChange={handleLocationChange}
             onTocChange={setToc}
             settings={settings}

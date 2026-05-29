@@ -23,5 +23,7 @@ export interface SettingsDrawerProps {
 }
 
 export interface SoundsDrawerProps {
+  sceneSoundPreset?: string | null;
+  sceneSoundPresetKey?: string | null;
   themeColors: ReaderThemeConfig;
 }

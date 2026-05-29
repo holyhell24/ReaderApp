@@ -1,13 +1,5 @@
 import { AmbienceType, SoundCategory } from "./enums";
-
-export { SoundCategory } from "./enums";
-
-export interface SoundTrack {
-  category: SoundCategory;
-  id: AmbienceType;
-  label: string;
-  src: string;
-}
+import type { SoundTrack } from "./types/types";
 
 export const soundTracks: SoundTrack[] = [
   {

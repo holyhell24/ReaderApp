@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AmbienceType } from "../../../../../enums";
-import {
-  soundTracks,
-  type SoundCategory,
-  type SoundTrack,
-} from "../../../../../sounds";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AmbienceType, SoundCategory } from "../../../../../enums";
+import { soundTracks } from "../../../../../sounds";
+import type { SoundTrack } from "../../../../../types/types";
 import type { SoundsDrawerProps } from "../types";
-import { soundPresetGroups } from "./soundPresets";
+import { soundPresetGroups, soundPresets } from "./soundPresets";
 import { soundCategories, type SoundPreset } from "./types";
 
 const CUSTOM_PRESET_LABEL = "Custom";
@@ -31,8 +28,15 @@ function presetButtonStyles(
   };
 }
 
-export default function Sounds({ themeColors }: SoundsDrawerProps) {
+export default function Sounds({
+  sceneSoundPreset,
+  sceneSoundPresetKey,
+  themeColors,
+}: SoundsDrawerProps) {
   const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
+  const appliedSceneSoundPresetKeyRef = useRef<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const [activePreset, setActivePreset] = useState(CUSTOM_PRESET_LABEL);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -55,6 +59,30 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
       ),
     [],
   );
+  const presetByLabel = useMemo(
+    () => new Map(soundPresets.map((preset) => [preset.label, preset])),
+    [],
+  );
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !dropdownRef.current?.contains(event.target) &&
+        !triggerRef.current?.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     soundTracks.forEach((track) => {
@@ -66,7 +94,7 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
     });
   }, [isMuted, masterVolume, trackVolumes]);
 
-  const playTrack = (trackId: AmbienceType, volume: number) => {
+  const playTrack = useCallback((trackId: AmbienceType, volume: number) => {
     const audio = audioRefs.current[trackId];
     if (!audio) return;
 
@@ -80,7 +108,7 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
 
     setIsRunning(true);
     void audio.play();
-  };
+  }, [isMuted, masterVolume]);
 
   const handleTrackVolumeChange = (trackId: AmbienceType, volume: number) => {
     setActivePreset(CUSTOM_PRESET_LABEL);
@@ -91,7 +119,7 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
     playTrack(trackId, volume);
   };
 
-  const applyPreset = (preset: SoundPreset) => {
+  const applyPreset = useCallback((preset: SoundPreset) => {
     Object.values(audioRefs.current).forEach((audio) => {
       audio?.pause();
     });
@@ -103,7 +131,27 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
     Object.entries(preset.volumes).forEach(([trackId, volume]) => {
       playTrack(trackId as AmbienceType, volume);
     });
-  };
+  }, [playTrack]);
+
+  useEffect(() => {
+    if (
+      !sceneSoundPreset ||
+      !sceneSoundPresetKey ||
+      appliedSceneSoundPresetKeyRef.current === sceneSoundPresetKey
+    ) {
+      return;
+    }
+
+    const preset = presetByLabel.get(sceneSoundPreset);
+    if (!preset) return;
+
+    const timeoutId = window.setTimeout(() => {
+      appliedSceneSoundPresetKeyRef.current = sceneSoundPresetKey;
+      applyPreset(preset);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [applyPreset, presetByLabel, sceneSoundPreset, sceneSoundPresetKey]);
 
   const startAmbient = () => {
     let hasActiveTrack = false;
@@ -150,6 +198,7 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
       ))}
 
       <button
+        ref={triggerRef}
         type="button"
         aria-expanded={isDropdownOpen}
         aria-controls="book-sounds-menu"
@@ -202,125 +251,134 @@ export default function Sounds({ themeColors }: SoundsDrawerProps) {
       </label>
 
       {isDropdownOpen && (
-        <div
-          id="book-sounds-menu"
-          className="absolute left-1/2 top-full z-40 mt-3 max-h-[70vh] w-[36rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-y-auto border p-4 shadow-xl"
-          style={{
-            backgroundColor: themeColors.background,
-            borderColor: themeColors.muted,
-            color: themeColors.foreground,
-          }}
-        >
-          <section
-            className="mb-5 border-b pb-4"
-            style={{ borderColor: themeColors.muted }}
+        <>
+          <button
+            type="button"
+            aria-label="Close ambient menu"
+            className="fixed inset-0 z-30 cursor-default bg-transparent"
+            onClick={() => setIsDropdownOpen(false)}
+          />
+          <div
+            ref={dropdownRef}
+            id="book-sounds-menu"
+            className="absolute left-1/2 top-full z-40 mt-3 max-h-[70vh] w-[36rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-y-auto border p-4 shadow-xl"
+            style={{
+              backgroundColor: themeColors.background,
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
           >
-            <h3 className="mb-3 text-sm font-semibold">Presets</h3>
-            <div className="grid gap-3">
-              {soundPresetGroups.map((group) => (
-                <div
-                  key={group.label}
-                  className="grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-3"
-                >
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: themeColors.muted }}
+            <section
+              className="mb-5 border-b pb-4"
+              style={{ borderColor: themeColors.muted }}
+            >
+              <h3 className="mb-3 text-sm font-semibold">Presets</h3>
+              <div className="grid gap-3">
+                {soundPresetGroups.map((group) => (
+                  <div
+                    key={group.label}
+                    className="grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-3"
                   >
-                    {group.label}
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {group.presets.map((preset) => (
-                      <button
-                        key={preset.label}
-                        type="button"
-                        onClick={() => applyPreset(preset)}
-                        className="cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80"
-                        style={presetButtonStyles(
-                          activePreset === preset.label,
-                          themeColors,
-                        )}
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setActivePreset(CUSTOM_PRESET_LABEL)}
-                className="cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80"
-                style={presetButtonStyles(
-                  activePreset === CUSTOM_PRESET_LABEL,
-                  themeColors,
-                )}
-              >
-                {CUSTOM_PRESET_LABEL}
-              </button>
-            </div>
-          </section>
-
-          {activePreset === CUSTOM_PRESET_LABEL &&
-            soundCategories.map((category) => {
-              const tracks = tracksByCategory[category];
-
-              return (
-                <section key={category} className="mb-5 last:mb-0">
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <h3 className="text-sm font-semibold">
-                      {categoryLabel(category)}
-                    </h3>
                     <span
-                      className="text-xs"
+                      className="text-xs font-medium"
                       style={{ color: themeColors.muted }}
                     >
-                      {tracks.length} sounds
+                      {group.label}
                     </span>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {tracks.map((track) => {
-                      const volume = trackVolumes[track.id] ?? 0;
-
-                      return (
-                        <label
-                          key={track.id}
-                          className="grid cursor-pointer gap-1 text-xs"
+                    <div className="flex flex-wrap gap-2">
+                      {group.presets.map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => applyPreset(preset)}
+                          className="cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80"
+                          style={presetButtonStyles(
+                            activePreset === preset.label,
+                            themeColors,
+                          )}
                         >
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="truncate font-medium">
-                              {track.label}
-                            </span>
-                            <span
-                              className="shrink-0"
-                              style={{ color: themeColors.muted }}
-                            >
-                              {formatPercent(volume)}
-                            </span>
-                          </div>
-                          <input
-                            type="range"
-                            min={0}
-                            max={1}
-                            step={0.01}
-                            value={volume}
-                            aria-label={`${track.label} volume`}
-                            onChange={(event) =>
-                              handleTrackVolumeChange(
-                                track.id,
-                                Number(event.target.value),
-                              )
-                            }
-                            className="w-full cursor-pointer"
-                          />
-                        </label>
-                      );
-                    })}
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </section>
-              );
-            })}
-        </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setActivePreset(CUSTOM_PRESET_LABEL)}
+                  className="cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80"
+                  style={presetButtonStyles(
+                    activePreset === CUSTOM_PRESET_LABEL,
+                    themeColors,
+                  )}
+                >
+                  {CUSTOM_PRESET_LABEL}
+                </button>
+              </div>
+            </section>
+
+            {activePreset === CUSTOM_PRESET_LABEL &&
+              soundCategories.map((category) => {
+                const tracks = tracksByCategory[category];
+
+                return (
+                  <section key={category} className="mb-5 last:mb-0">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <h3 className="text-sm font-semibold">
+                        {categoryLabel(category)}
+                      </h3>
+                      <span
+                        className="text-xs"
+                        style={{ color: themeColors.muted }}
+                      >
+                        {tracks.length} sounds
+                      </span>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {tracks.map((track) => {
+                        const volume = trackVolumes[track.id] ?? 0;
+
+                        return (
+                          <label
+                            key={track.id}
+                            className="grid cursor-pointer gap-1 text-xs"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="truncate font-medium">
+                                {track.label}
+                              </span>
+                              <span
+                                className="shrink-0"
+                                style={{ color: themeColors.muted }}
+                              >
+                                {formatPercent(volume)}
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min={0}
+                              max={1}
+                              step={0.01}
+                              value={volume}
+                              aria-label={`${track.label} volume`}
+                              onChange={(event) =>
+                                handleTrackVolumeChange(
+                                  track.id,
+                                  Number(event.target.value),
+                                )
+                              }
+                              className="w-full cursor-pointer"
+                            />
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,10 +1,9 @@
-export interface SoundScene {
-  chapter: string;
-  subchapter: number;
-  soundPreset: string;
-}
-
-export const soundScenes: SoundScene[] = [
+[
+  {
+    "chapter": "Глас рассудка I",
+    "subchapter": 1,
+    "soundPreset": "Temple"
+  },
   {
     "chapter": "Ведьмак",
     "subchapter": 1,
@@ -28,7 +27,7 @@ export const soundScenes: SoundScene[] = [
   {
     "chapter": "Ведьмак",
     "subchapter": 5,
-    "soundPreset": "Castle Horror"
+    "soundPreset": "Manor"
   },
   {
     "chapter": "Ведьмак",
@@ -44,6 +43,16 @@ export const soundScenes: SoundScene[] = [
     "chapter": "Ведьмак",
     "subchapter": 8,
     "soundPreset": "King's Room"
+  },
+  {
+    "chapter": "Глас рассудка II",
+    "subchapter": 1,
+    "soundPreset": "Temple"
+  },
+  {
+    "chapter": "Глас рассудка II",
+    "subchapter": 2,
+    "soundPreset": "Temple"
   },
   {
     "chapter": "Крупица истины",
@@ -68,7 +77,12 @@ export const soundScenes: SoundScene[] = [
   {
     "chapter": "Крупица истины",
     "subchapter": 5,
-    "soundPreset": "Manor"
+    "soundPreset": "Forest"
+  },
+  {
+    "chapter": "Глас рассудка III",
+    "subchapter": 1,
+    "soundPreset": "Temple"
   },
   {
     "chapter": "Меньшее зло",
@@ -101,6 +115,11 @@ export const soundScenes: SoundScene[] = [
     "soundPreset": "Village 2"
   },
   {
+    "chapter": "Глас рассудка IV",
+    "subchapter": 1,
+    "soundPreset": "Temple"
+  },
+  {
     "chapter": "Вопрос цены",
     "subchapter": 1,
     "soundPreset": "Castle"
@@ -108,12 +127,17 @@ export const soundScenes: SoundScene[] = [
   {
     "chapter": "Вопрос цены",
     "subchapter": 2,
-    "soundPreset": "Tavern 2"
+    "soundPreset": "Castle"
   },
   {
     "chapter": "Вопрос цены",
     "subchapter": 3,
-    "soundPreset": "Tavern 2"
+    "soundPreset": "Castle"
+  },
+  {
+    "chapter": "Глас рассудка V",
+    "subchapter": 1,
+    "soundPreset": "Library"
   },
   {
     "chapter": "Край света",
@@ -151,6 +175,11 @@ export const soundScenes: SoundScene[] = [
     "soundPreset": "Village Night"
   },
   {
+    "chapter": "Глас рассудка VI",
+    "subchapter": 1,
+    "soundPreset": "Alchemist's Tower"
+  },
+  {
     "chapter": "Последнее желание",
     "subchapter": 1,
     "soundPreset": "River"
@@ -183,57 +212,57 @@ export const soundScenes: SoundScene[] = [
   {
     "chapter": "Последнее желание",
     "subchapter": 7,
-    "soundPreset": "King's Room"
+    "soundPreset": "Rain Battle"
   },
   {
     "chapter": "Последнее желание",
     "subchapter": 8,
-    "soundPreset": "Tavern 1"
+    "soundPreset": "Rain Battle"
   },
   {
     "chapter": "Последнее желание",
     "subchapter": 9,
-    "soundPreset": "Village Night"
+    "soundPreset": "Rain Battle"
   },
   {
     "chapter": "Последнее желание",
     "subchapter": 10,
-    "soundPreset": "Tavern 1"
+    "soundPreset": "Rain Battle"
   },
   {
-    "chapter": "Глас рассудка I",
-    "subchapter": 1,
-    "soundPreset": "Temple"
+    "chapter": "Последнее желание",
+    "subchapter": 11,
+    "soundPreset": "Rain Battle"
   },
   {
-    "chapter": "Глас рассудка II",
-    "subchapter": 1,
-    "soundPreset": "Temple"
+    "chapter": "Последнее желание",
+    "subchapter": 12,
+    "soundPreset": "Rain Battle"
   },
   {
-    "chapter": "Глас рассудка II",
-    "subchapter": 2,
-    "soundPreset": "Temple"
+    "chapter": "Последнее желание",
+    "subchapter": 13,
+    "soundPreset": "Rain Battle"
   },
   {
-    "chapter": "Глас рассудка III",
-    "subchapter": 1,
-    "soundPreset": "Temple"
+    "chapter": "Последнее желание",
+    "subchapter": 14,
+    "soundPreset": "Rain Battle"
   },
   {
-    "chapter": "Глас рассудка IV",
-    "subchapter": 1,
-    "soundPreset": "Temple"
+    "chapter": "Последнее желание",
+    "subchapter": 15,
+    "soundPreset": "Rain Battle"
   },
   {
-    "chapter": "Глас рассудка V",
-    "subchapter": 1,
-    "soundPreset": "Library"
+    "chapter": "Последнее желание",
+    "subchapter": 16,
+    "soundPreset": "Rain Drops"
   },
   {
-    "chapter": "Глас рассудка VI",
-    "subchapter": 1,
-    "soundPreset": "Alchemist's Tower"
+    "chapter": "Последнее желание",
+    "subchapter": 17,
+    "soundPreset": "Village Night"
   },
   {
     "chapter": "Глас рассудка VII",
@@ -245,4 +274,4 @@ export const soundScenes: SoundScene[] = [
     "subchapter": 2,
     "soundPreset": "River"
   }
-];
+]

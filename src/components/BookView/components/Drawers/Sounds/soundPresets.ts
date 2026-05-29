@@ -5,7 +5,7 @@ export const soundPresets: SoundPreset[] = [
   {
     label: "Forest",
     volumes: {
-      [AmbienceType.Birds]: 0.35,
+      [AmbienceType.Birds]: 0.15,
       [AmbienceType.Crickets]: 0.25,
       [AmbienceType.WindInTrees]: 0.1,
       [AmbienceType.Wind]: 0.1,
@@ -89,7 +89,7 @@ export const soundPresets: SoundPreset[] = [
     volumes: {
       [AmbienceType.Campfire]: 0.3,
       [AmbienceType.Fireplace]: 0.5,
-      [AmbienceType.HowlingWind]: 0.5,
+      [AmbienceType.HowlingWind]: 0.05,
       [AmbienceType.LightRain]: 0.1,
       [AmbienceType.CrowdedBar]: 0.25,
       [AmbienceType.SingingBowl]: 0.02,
@@ -171,6 +171,25 @@ export const soundPresets: SoundPreset[] = [
       [AmbienceType.NightVillage]: 0.25,
     },
   },
+  {
+    label: "Rain Battle",
+    volumes: {
+      [AmbienceType.Campfire]: 0.2,
+      [AmbienceType.CastleNight]: 0.3,
+      [AmbienceType.Wind]: 0.2,
+      [AmbienceType.HowlingWind]: 0.1,
+      [AmbienceType.HeavyRain]: 0.1,
+      [AmbienceType.Thunder]: 0.1,
+    },
+  },
+  {
+    label: "Rain Drops",
+    volumes: {
+      [AmbienceType.Campfire]: 0.2,
+      [AmbienceType.Droplets]: 0.2,
+      [AmbienceType.Crows]: 0.1,
+    },
+  },
 ];
 
 export const soundPresetGroups: SoundPresetGroup[] = [
@@ -189,7 +208,9 @@ export const soundPresetGroups: SoundPresetGroup[] = [
   {
     label: "Rain",
     presets: soundPresets.filter((preset) =>
-      ["Light rain", "Heavy rain"].includes(preset.label),
+      ["Light rain", "Heavy rain", "Rain Battle", "Rain Drops"].includes(
+        preset.label,
+      ),
     ),
   },
   {
@@ -220,6 +241,34 @@ export const soundPresetGroups: SoundPresetGroup[] = [
     label: "Village",
     presets: soundPresets.filter((preset) =>
       ["Village 1", "Village 2", "Village Night"].includes(preset.label),
+    ),
+  },
+  {
+    label: "Other",
+    presets: soundPresets.filter(
+      (preset) =>
+        ![
+          "Forest",
+          "Forest Night",
+          "River",
+          "River Night",
+          "Light rain",
+          "Heavy rain",
+          "Rain Battle",
+          "Rain Drops",
+          "Tavern 1",
+          "Tavern 2",
+          "Castle",
+          "King's Room",
+          "Manor",
+          "Library",
+          "Alchemist's Tower",
+          "Temple",
+          "Church",
+          "Village 1",
+          "Village 2",
+          "Village Night",
+        ].includes(preset.label),
     ),
   },
 ];
