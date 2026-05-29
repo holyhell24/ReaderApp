@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { DrawerType } from "../../enums";
-import { readerThemes, type ReaderSettings, type ReaderTheme } from "../../theme";
+import {
+  readerThemes,
+  type ReaderSettings,
+  type ReaderTheme,
+} from "../../theme";
 import { loadBookLocation, saveBookLocation } from "../../utils/bookStorage";
 import Chapters from "./components/Drawers/Chapters";
 import Settings from "./components/Drawers/Settings";
+import Sounds from "./components/Drawers/Sounds";
 import EpubReader from "./components/EpubReader";
 import type { BookViewProps, ReaderTocItem } from "./types";
 
@@ -52,65 +57,70 @@ export default function BookView({
       }}
     >
       <header
-        className="flex w-full shrink-0 items-center gap-4 border-b px-4 py-2"
+        className="grid w-full shrink-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 border-b px-4 py-2"
         style={{
           backgroundColor: themeColors.background,
           borderColor: themeColors.muted,
           color: themeColors.foreground,
         }}
       >
-        <Link
-          to="/"
-          className="rounded-lg border px-3 py-2 text-sm transition-opacity hover:opacity-80"
-          style={{
-            borderColor: themeColors.muted,
-            color: themeColors.foreground,
-          }}
-        >
-          &lt; Back
-        </Link>
-        <div className="min-w-0 flex-1">
-          <h1
-            className="truncate text-sm font-medium"
-            style={{ color: themeColors.foreground }}
+        <div className="flex min-w-0 items-center gap-4">
+          <Link
+            to="/"
+            className="shrink-0 rounded-lg border px-3 py-2 text-sm transition-opacity hover:opacity-80"
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
           >
-            {book.title}
-          </h1>
-          {book.author && (
-            <p
-              className="truncate text-xs"
-              style={{ color: themeColors.muted }}
+            &lt; Back
+          </Link>
+          <div className="min-w-0">
+            <h1
+              className="truncate text-sm font-medium"
+              style={{ color: themeColors.foreground }}
             >
-              {book.author}
-            </p>
-          )}
+              {book.title}
+            </h1>
+            {book.author && (
+              <p
+                className="truncate text-xs"
+                style={{ color: themeColors.muted }}
+              >
+                {book.author}
+              </p>
+            )}
+          </div>
         </div>
-        <button
-          type="button"
-          aria-expanded={drawerType === DrawerType.Chapters}
-          aria-controls="book-chapters-drawer"
-          onClick={() => setDrawerType(DrawerType.Chapters)}
-          className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80"
-          style={{
-            borderColor: themeColors.muted,
-            color: themeColors.foreground,
-          }}
-        >
-          Chapters
-        </button>
-        <button
-          type="button"
-          aria-expanded={drawerType === DrawerType.Settings}
-          aria-controls="book-settings-drawer"
-          onClick={() => setDrawerType(DrawerType.Settings)}
-          className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80"
-          style={{
-            borderColor: themeColors.muted,
-            color: themeColors.foreground,
-          }}
-        >
-          Settings
-        </button>
+        <Sounds themeColors={themeColors} />
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            aria-expanded={drawerType === DrawerType.Chapters}
+            aria-controls="book-chapters-drawer"
+            onClick={() => setDrawerType(DrawerType.Chapters)}
+            className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80"
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
+          >
+            Chapters
+          </button>
+          <button
+            type="button"
+            aria-expanded={drawerType === DrawerType.Settings}
+            aria-controls="book-settings-drawer"
+            onClick={() => setDrawerType(DrawerType.Settings)}
+            className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80"
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
+          >
+            Settings
+          </button>
+        </div>
       </header>
 
       <section className="flex min-h-0 w-full flex-1">
@@ -163,6 +173,7 @@ export default function BookView({
           />
         </>
       )}
+
     </main>
   );
 }

@@ -1,0 +1,295 @@
+[
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 1,
+    "location": "трактир У Лиса",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 2,
+    "location": "дом Велерада",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 3,
+    "location": "королевские покои",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 4,
+    "location": "казармы",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 5,
+    "location": "старый дворец",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 6,
+    "location": "склеп старого дворца",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 7,
+    "location": "склеп старого дворца",
+    "time": "night"
+  },
+  {
+    "chapter": "Ведьмак",
+    "subchapter": 8,
+    "location": "казармы",
+    "time": "dawn"
+  },
+
+  {
+    "chapter": "Крупица истины",
+    "subchapter": 1,
+    "location": "лесная дорога",
+    "time": "day"
+  },
+  {
+    "chapter": "Крупица истины",
+    "subchapter": 2,
+    "location": "усадьба Нивеллена",
+    "time": "day"
+  },
+  {
+    "chapter": "Крупица истины",
+    "subchapter": 3,
+    "location": "лес у костра",
+    "time": "night"
+  },
+  {
+    "chapter": "Крупица истины",
+    "subchapter": 4,
+    "location": "лесная дорога",
+    "time": "day"
+  },
+  {
+    "chapter": "Крупица истины",
+    "subchapter": 5,
+    "location": "дом Нивеллена",
+    "time": "night"
+  },
+
+  {
+    "chapter": "Меньшее зло",
+    "subchapter": 1,
+    "location": "улицы Блавикена",
+    "time": "day"
+  },
+  {
+    "chapter": "Меньшее зло",
+    "subchapter": 2,
+    "location": "башня Стрегобора",
+    "time": "day"
+  },
+  {
+    "chapter": "Меньшее зло",
+    "subchapter": 3,
+    "location": "постоялый двор Золотой Двор",
+    "time": "day"
+  },
+  {
+    "chapter": "Меньшее зло",
+    "subchapter": 4,
+    "location": "комната Геральта",
+    "time": "evening"
+  },
+  {
+    "chapter": "Меньшее зло",
+    "subchapter": 5,
+    "location": "дом Кальдемейна",
+    "time": "night"
+  },
+  {
+    "chapter": "Меньшее зло",
+    "subchapter": 6,
+    "location": "рынок Блавикена",
+    "time": "day"
+  },
+
+  {
+    "chapter": "Вопрос цены",
+    "subchapter": 1,
+    "location": "замок Цинтры",
+    "time": "evening"
+  },
+  {
+    "chapter": "Вопрос цены",
+    "subchapter": 2,
+    "location": "пиршественный зал",
+    "time": "night"
+  },
+  {
+    "chapter": "Вопрос цены",
+    "subchapter": 3,
+    "location": "пиршественный зал",
+    "time": "night"
+  },
+
+  {
+    "chapter": "Край света",
+    "subchapter": 1,
+    "location": "деревня Нижний Посад",
+    "time": "day"
+  },
+  {
+    "chapter": "Край света",
+    "subchapter": 2,
+    "location": "дом солтыса",
+    "time": "day"
+  },
+  {
+    "chapter": "Край света",
+    "subchapter": 3,
+    "location": "конопляное поле",
+    "time": "day"
+  },
+  {
+    "chapter": "Край света",
+    "subchapter": 4,
+    "location": "деревня",
+    "time": "day"
+  },
+  {
+    "chapter": "Край света",
+    "subchapter": 5,
+    "location": "конопляное поле",
+    "time": "day"
+  },
+  {
+    "chapter": "Край света",
+    "subchapter": 6,
+    "location": "лесная поляна",
+    "time": "day"
+  },
+  {
+    "chapter": "Край света",
+    "subchapter": 7,
+    "location": "деревня Нижний Посад",
+    "time": "evening"
+  },
+
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 1,
+    "location": "берег реки",
+    "time": "day"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 2,
+    "location": "город Ринда",
+    "time": "day"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 3,
+    "location": "дом Йеннифэр",
+    "time": "evening"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 4,
+    "location": "комната Йеннифэр",
+    "time": "night"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 5,
+    "location": "дом Хиреадана",
+    "time": "night"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 6,
+    "location": "тюрьма",
+    "time": "night"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 7,
+    "location": "кабинет ипата",
+    "time": "night"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 8,
+    "location": "корчма Эррдиля",
+    "time": "night"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 9,
+    "location": "улицы Ринды",
+    "time": "night"
+  },
+  {
+    "chapter": "Последнее желание",
+    "subchapter": 10,
+    "location": "корчма Эррдиля",
+    "time": "night"
+  },
+  {
+    "chapter": "Глас рассудка I",
+    "subchapter": 1,
+    "location": "комната в храме Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка II",
+    "subchapter": 1,
+    "location": "комната в храме Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка II",
+    "subchapter": 2,
+    "location": "сады и хозяйственные постройки храма Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка III",
+    "subchapter": 1,
+    "location": "храм Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка IV",
+    "subchapter": 1,
+    "location": "храм Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка V",
+    "subchapter": 1,
+    "location": "библиотека храма Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка VI",
+    "subchapter": 1,
+    "location": "грот с растениями в храме Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка VII",
+    "subchapter": 1,
+    "location": "поляна возле храма Мелитэле",
+    "time": "day"
+  },
+  {
+    "chapter": "Глас рассудка VII",
+    "subchapter": 2,
+    "location": "дорога от храма Мелитэле",
+    "time": "day"
+  }
+]

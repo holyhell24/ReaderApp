@@ -21,3 +21,7 @@ export interface SettingsDrawerProps {
   theme: ReaderTheme;
   themeColors: ReaderThemeConfig;
 }
+
+export interface SoundsDrawerProps {
+  themeColors: ReaderThemeConfig;
+}
