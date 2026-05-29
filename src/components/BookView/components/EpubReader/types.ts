@@ -1,4 +1,5 @@
 import type { ReaderTheme } from "../../../../theme";
+import type { ReaderTocItem } from "../../types";
 
 export interface EpubReaderProps {
   location: string | number;
@@ -6,10 +7,4 @@ export interface EpubReaderProps {
   onTocChange: (toc: ReaderTocItem[]) => void;
   theme: ReaderTheme;
   url: string | ArrayBuffer;
-}
-
-export interface ReaderTocItem {
-  href: string;
-  label: string;
-  subitems?: ReaderTocItem[];
 }

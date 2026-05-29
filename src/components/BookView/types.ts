@@ -6,3 +6,9 @@ export interface BookViewProps {
   onThemeChange: (theme: ReaderTheme) => void;
   theme: ReaderTheme;
 }
+
+export interface ReaderTocItem {
+  href: string;
+  label: string;
+  subitems?: ReaderTocItem[];
+}

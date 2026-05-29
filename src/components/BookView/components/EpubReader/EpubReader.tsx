@@ -9,43 +9,12 @@ import { ReactReader } from "react-reader";
 import { readerThemes, type ReaderTheme } from "../../../../theme";
 import { readerStyles } from "./styles";
 import type { EpubReaderProps } from "./types";
+import { themeRules } from "./utils";
 import "./styles.css";
 
 type ReaderRendition = Parameters<
   NonNullable<ComponentProps<typeof ReactReader>["getRendition"]>
 >[0];
-
-function themeRules(theme: ReaderTheme) {
-  const colors = readerThemes[theme];
-
-  return {
-    a: {
-      color: `${colors.muted} !important`,
-    },
-    body: {
-      background: `${colors.background} !important`,
-      color: `${colors.foreground} !important`,
-    },
-    h1: {
-      background: "transparent !important",
-      border: "none !important",
-      color: `${colors.foreground} !important`,
-      textAlign: "center !important",
-    },
-    h2: {
-      background: "transparent !important",
-      border: "none !important",
-      color: `${colors.foreground} !important`,
-      textAlign: "center !important",
-    },
-    html: {
-      background: `${colors.background} !important`,
-    },
-    p: {
-      color: `${colors.foreground} !important`,
-    },
-  };
-}
 
 function updateTheme(rendition: ReaderRendition, theme: ReaderTheme) {
   const colors = readerThemes[theme];
