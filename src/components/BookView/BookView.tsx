@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { DrawerType } from "../../enums";
 import { readerThemes, type ReaderTheme } from "../../theme";
+import { loadBookLocation, saveBookLocation } from "../../utils/bookStorage";
 import Chapters from "./components/Drawers/Chapters";
 import Settings from "./components/Drawers/Settings";
 import EpubReader from "./components/EpubReader";
@@ -13,7 +14,9 @@ export default function BookView({
   theme,
 }: BookViewProps) {
   const [drawerType, setDrawerType] = useState<DrawerType | null>(null);
-  const [readerLocation, setReaderLocation] = useState<string | number>(0);
+  const [readerLocation, setReaderLocation] = useState<string | number>(
+    () => loadBookLocation(book.id) ?? 0,
+  );
   const [toc, setToc] = useState<ReaderTocItem[]>([]);
   const themeColors = readerThemes[theme];
 
@@ -21,11 +24,17 @@ export default function BookView({
 
   const handleChapterSelect = (href: string) => {
     setReaderLocation(href);
+    saveBookLocation(book.id, href);
     closeDrawer();
   };
 
   const handleThemeChange = (nextTheme: ReaderTheme) => {
     onThemeChange(nextTheme);
+  };
+
+  const handleLocationChange = (location: string) => {
+    setReaderLocation(location);
+    saveBookLocation(book.id, location);
   };
 
   return (
@@ -103,7 +112,7 @@ export default function BookView({
           <EpubReader
             key={book.id}
             location={readerLocation}
-            onLocationChange={setReaderLocation}
+            onLocationChange={handleLocationChange}
             onTocChange={setToc}
             theme={theme}
             url={book.url}

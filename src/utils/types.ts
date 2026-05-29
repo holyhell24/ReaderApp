@@ -8,4 +8,5 @@ export interface StoredBook extends BookMetadata {
 
 export interface LibraryMeta {
   activeBookId: string | null;
+  readerLocations?: Record<string, string>;
 }

@@ -77,10 +77,14 @@ function storedBookToBook(stored: StoredBook): Book {
 function readLibraryMeta(): LibraryMeta {
   try {
     const raw = localStorage.getItem(META_STORAGE_KEY);
-    if (!raw) return { activeBookId: null };
-    return JSON.parse(raw) as LibraryMeta;
+    if (!raw) return { activeBookId: null, readerLocations: {} };
+    const meta = JSON.parse(raw) as LibraryMeta;
+    return {
+      activeBookId: meta.activeBookId,
+      readerLocations: meta.readerLocations ?? {},
+    };
   } catch {
-    return { activeBookId: null };
+    return { activeBookId: null, readerLocations: {} };
   }
 }
 
@@ -123,7 +127,23 @@ export async function updateStoredBookMetadata(
 }
 
 export async function saveActiveBookId(activeBookId: string | null): Promise<void> {
-  writeLibraryMeta({ activeBookId });
+  writeLibraryMeta({ ...readLibraryMeta(), activeBookId });
+}
+
+export function loadBookLocation(bookId: string): string | null {
+  return readLibraryMeta().readerLocations?.[bookId] ?? null;
+}
+
+export function saveBookLocation(bookId: string, location: string): void {
+  const meta = readLibraryMeta();
+
+  writeLibraryMeta({
+    ...meta,
+    readerLocations: {
+      ...meta.readerLocations,
+      [bookId]: location,
+    },
+  });
 }
 
 export async function loadLibrary(): Promise<{
