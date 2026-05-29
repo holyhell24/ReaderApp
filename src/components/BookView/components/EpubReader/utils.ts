@@ -1,5 +1,6 @@
 import {
   readerFonts,
+  ReaderInterval,
   readerIntervals,
   readerLineHeights,
   readerThemes,
@@ -12,7 +13,9 @@ export function themeRules(theme: ReaderTheme, settings: ReaderSettings) {
   const font = readerFonts[settings.fontFamily];
   const interval =
     readerIntervals[
-      settings.fontFamily === "fast_serif" ? "tight" : settings.interval
+      settings.fontFamily === "fast_serif"
+        ? ReaderInterval.Tight
+        : settings.interval
     ];
   const lineHeight = readerLineHeights[settings.lineHeight];
 

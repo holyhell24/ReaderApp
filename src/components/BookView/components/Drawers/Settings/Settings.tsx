@@ -6,10 +6,12 @@ import {
   readerIntervals,
   readerLineHeights,
   readerThemes,
+  readerViews,
+  ReaderInterval,
   type ReaderFontFamily,
-  type ReaderInterval,
   type ReaderLineHeight,
   type ReaderTheme,
+  type ReaderView,
 } from "../../../../../theme";
 import type { SettingsDrawerProps } from "../types";
 
@@ -38,7 +40,8 @@ export default function Settings({
     onSettingsChange({
       ...settings,
       fontFamily,
-      interval: fontFamily === "fast_serif" ? "tight" : settings.interval,
+      interval:
+        fontFamily === "fast_serif" ? ReaderInterval.Tight : settings.interval,
     });
   };
 
@@ -57,6 +60,13 @@ export default function Settings({
     onSettingsChange({
       ...settings,
       lineHeight,
+    });
+  };
+
+  const handleViewChange = (view: ReaderView) => {
+    onSettingsChange({
+      ...settings,
+      view,
     });
   };
 
@@ -117,6 +127,116 @@ export default function Settings({
               {readerThemes[themeName].label}
             </button>
           ))}
+        </div>
+      </div>
+      <div className="mt-6">
+        <h3
+          className="mb-2 text-sm font-medium"
+          style={{ color: themeColors.foreground }}
+        >
+          Font
+        </h3>
+        <div className="grid gap-2">
+          {(Object.keys(readerFonts) as ReaderFontFamily[]).map((fontFamily) => (
+            <button
+              key={fontFamily}
+              type="button"
+              onClick={() => handleFontFamilyChange(fontFamily)}
+              className="cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor:
+                  settings.fontFamily === fontFamily
+                    ? themeColors.foreground
+                    : "transparent",
+                borderColor:
+                  settings.fontFamily === fontFamily
+                    ? themeColors.foreground
+                    : themeColors.muted,
+                color:
+                  settings.fontFamily === fontFamily
+                    ? themeColors.background
+                    : themeColors.foreground,
+                fontFamily: readerFonts[fontFamily].cssValue,
+              }}
+            >
+              {readerFonts[fontFamily].label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-6">
+        <h3
+          className="mb-2 text-sm font-medium"
+          style={{ color: themeColors.foreground }}
+        >
+          Views
+        </h3>
+        <div className="grid grid-cols-3 gap-2">
+          {(Object.keys(readerViews) as ReaderView[]).map((view) => (
+            <button
+              key={view}
+              type="button"
+              onClick={() => handleViewChange(view)}
+              className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor:
+                  settings.view === view ? themeColors.foreground : "transparent",
+                borderColor:
+                  settings.view === view
+                    ? themeColors.foreground
+                    : themeColors.muted,
+                color:
+                  settings.view === view
+                    ? themeColors.background
+                    : themeColors.foreground,
+              }}
+            >
+              {readerViews[view].label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-6">
+        <h3
+          className="mb-2 text-sm font-medium"
+          style={{ color: themeColors.foreground }}
+        >
+          Font size
+        </h3>
+        <div className="grid grid-cols-[44px_1fr_44px] items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleFontSizeChange(-READER_FONT_SIZE_STEP)}
+            className="h-11 cursor-pointer rounded-lg border text-lg font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={settings.fontSize <= MIN_READER_FONT_SIZE}
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
+          >
+            -
+          </button>
+          <div
+            className="rounded-lg border px-3 py-2 text-center text-sm font-medium"
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
+          >
+            {settings.fontSize}px
+          </div>
+          <button
+            type="button"
+            onClick={() => handleFontSizeChange(READER_FONT_SIZE_STEP)}
+            className="h-11 cursor-pointer rounded-lg border text-lg font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={settings.fontSize >= MAX_READER_FONT_SIZE}
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
+          >
+            +
+          </button>
         </div>
       </div>
       <div className="mt-6">
@@ -188,84 +308,6 @@ export default function Settings({
               </button>
             ),
           )}
-        </div>
-      </div>
-      <div className="mt-6">
-        <h3
-          className="mb-2 text-sm font-medium"
-          style={{ color: themeColors.foreground }}
-        >
-          Font size
-        </h3>
-        <div className="grid grid-cols-[44px_1fr_44px] items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleFontSizeChange(-READER_FONT_SIZE_STEP)}
-            className="h-11 cursor-pointer rounded-lg border text-lg font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={settings.fontSize <= MIN_READER_FONT_SIZE}
-            style={{
-              borderColor: themeColors.muted,
-              color: themeColors.foreground,
-            }}
-          >
-            -
-          </button>
-          <div
-            className="rounded-lg border px-3 py-2 text-center text-sm font-medium"
-            style={{
-              borderColor: themeColors.muted,
-              color: themeColors.foreground,
-            }}
-          >
-            {settings.fontSize}px
-          </div>
-          <button
-            type="button"
-            onClick={() => handleFontSizeChange(READER_FONT_SIZE_STEP)}
-            className="h-11 cursor-pointer rounded-lg border text-lg font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={settings.fontSize >= MAX_READER_FONT_SIZE}
-            style={{
-              borderColor: themeColors.muted,
-              color: themeColors.foreground,
-            }}
-          >
-            +
-          </button>
-        </div>
-      </div>
-      <div className="mt-6">
-        <h3
-          className="mb-2 text-sm font-medium"
-          style={{ color: themeColors.foreground }}
-        >
-          Font
-        </h3>
-        <div className="grid gap-2">
-          {(Object.keys(readerFonts) as ReaderFontFamily[]).map((fontFamily) => (
-            <button
-              key={fontFamily}
-              type="button"
-              onClick={() => handleFontFamilyChange(fontFamily)}
-              className="cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium transition-opacity hover:opacity-80"
-              style={{
-                backgroundColor:
-                  settings.fontFamily === fontFamily
-                    ? themeColors.foreground
-                    : "transparent",
-                borderColor:
-                  settings.fontFamily === fontFamily
-                    ? themeColors.foreground
-                    : themeColors.muted,
-                color:
-                  settings.fontFamily === fontFamily
-                    ? themeColors.background
-                    : themeColors.foreground,
-                fontFamily: readerFonts[fontFamily].cssValue,
-              }}
-            >
-              {readerFonts[fontFamily].label}
-            </button>
-          ))}
         </div>
       </div>
       <button

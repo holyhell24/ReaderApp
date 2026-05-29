@@ -7,8 +7,15 @@ export {
   readerFonts,
   readerIntervals,
   readerLineHeights,
+  readerViews,
   saveReaderSettings,
 } from "./readerSettings";
+export {
+  ReaderInterval,
+  ReaderLineHeight,
+  ReaderTheme,
+  ReaderView,
+} from "../enums";
 export {
   isReaderTheme,
   loadReaderTheme,
@@ -18,11 +25,9 @@ export {
 export type {
   ReaderFontConfig,
   ReaderFontFamily,
-  ReaderInterval,
   ReaderIntervalConfig,
-  ReaderLineHeight,
   ReaderLineHeightConfig,
+  ReaderViewConfig,
   ReaderSettings,
-  ReaderTheme,
   ReaderThemeConfig,
 } from "./types";

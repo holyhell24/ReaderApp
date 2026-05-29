@@ -40,7 +40,6 @@ export default function BookView({
   };
 
   const handleLocationChange = (location: string) => {
-    setReaderLocation(location);
     saveBookLocation(book.id, location);
   };
 
@@ -117,7 +116,7 @@ export default function BookView({
       <section className="flex min-h-0 w-full flex-1">
         <div className="min-h-0 min-w-0 flex-1">
           <EpubReader
-            key={book.id}
+            key={`${book.id}-${settings.view}`}
             location={readerLocation}
             onLocationChange={handleLocationChange}
             onTocChange={setToc}

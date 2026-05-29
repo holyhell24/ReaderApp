@@ -1,27 +1,28 @@
-import type { ReaderTheme, ReaderThemeConfig } from "./types";
+import { ReaderTheme } from "../enums";
+import type { ReaderThemeConfig } from "./types";
 
 const STORAGE_KEY = "reader-app-theme";
 
 export const readerThemes: Record<ReaderTheme, ReaderThemeConfig> = {
-  light: {
+  [ReaderTheme.Light]: {
     background: "#ffffff",
     foreground: "#111827",
     label: "Light",
     muted: "#6b7280",
   },
-  dark: {
+  [ReaderTheme.Dark]: {
     background: "#111827",
     foreground: "#f9fafb",
     label: "Dark",
     muted: "#d1d5db",
   },
-  gray: {
+  [ReaderTheme.Gray]: {
     background: "#f3f4f6",
     foreground: "#1f2937",
     label: "Gray",
     muted: "#4b5563",
   },
-  sepia: {
+  [ReaderTheme.Sepia]: {
     background: "#f4ecd8",
     foreground: "#3f2f1f",
     label: "Sepia",
@@ -36,9 +37,9 @@ export function isReaderTheme(value: string | null): value is ReaderTheme {
 export function loadReaderTheme(): ReaderTheme {
   try {
     const storedTheme = localStorage.getItem(STORAGE_KEY);
-    return isReaderTheme(storedTheme) ? storedTheme : "light";
+    return isReaderTheme(storedTheme) ? storedTheme : ReaderTheme.Light;
   } catch {
-    return "light";
+    return ReaderTheme.Light;
   }
 }
 

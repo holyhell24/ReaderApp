@@ -9,10 +9,10 @@ import {
   loadReaderSettings,
   loadReaderTheme,
   readerThemes,
+  ReaderTheme,
   saveReaderSettings,
   saveReaderTheme,
   type ReaderSettings,
-  type ReaderTheme,
 } from "./theme";
 import { loadLibrary } from "./utils/bookStorage";
 import "./App.css";
@@ -39,8 +39,8 @@ function App() {
   };
 
   const handleSettingsReset = () => {
-    setReaderTheme("light");
-    saveReaderTheme("light");
+    setReaderTheme(ReaderTheme.Light);
+    saveReaderTheme(ReaderTheme.Light);
     setReaderSettings(DEFAULT_READER_SETTINGS);
     saveReaderSettings(DEFAULT_READER_SETTINGS);
   };

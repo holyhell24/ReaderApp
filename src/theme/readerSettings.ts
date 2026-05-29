@@ -1,25 +1,26 @@
 import type {
   ReaderFontConfig,
   ReaderFontFamily,
-  ReaderInterval,
   ReaderIntervalConfig,
-  ReaderLineHeight,
   ReaderLineHeightConfig,
   ReaderSettings,
+  ReaderViewConfig,
 } from "./types";
+import { ReaderInterval, ReaderLineHeight, ReaderView } from "../enums";
 
 const STORAGE_KEY = "reader-app-settings";
 
 export const DEFAULT_READER_SETTINGS: ReaderSettings = {
   fontFamily: "cactus_classical_serif",
-  fontSize: 22,
-  interval: "normal",
-  lineHeight: "normal",
+  fontSize: 20,
+  interval: ReaderInterval.Normal,
+  lineHeight: ReaderLineHeight.Normal,
+  view: ReaderView.Pages,
 };
 
 export const MIN_READER_FONT_SIZE = 12;
 export const MAX_READER_FONT_SIZE = 36;
-export const READER_FONT_SIZE_STEP = 1;
+export const READER_FONT_SIZE_STEP = 2;
 
 export const readerFonts: Record<ReaderFontFamily, ReaderFontConfig> = {
   cactus_classical_serif: {
@@ -45,32 +46,44 @@ export const readerFonts: Record<ReaderFontFamily, ReaderFontConfig> = {
 };
 
 export const readerIntervals: Record<ReaderInterval, ReaderIntervalConfig> = {
-  tight: {
+  [ReaderInterval.Tight]: {
     cssValue: "0",
     label: "Tight",
   },
-  normal: {
+  [ReaderInterval.Normal]: {
     cssValue: "0.02em",
     label: "Normal",
   },
-  wide: {
+  [ReaderInterval.Wide]: {
     cssValue: "0.06em",
     label: "Wide",
   },
 };
 
 export const readerLineHeights: Record<ReaderLineHeight, ReaderLineHeightConfig> = {
-  tight: {
+  [ReaderLineHeight.Tight]: {
     cssValue: "1.35",
     label: "Tight",
   },
-  normal: {
+  [ReaderLineHeight.Normal]: {
     cssValue: "1.6",
     label: "Normal",
   },
-  wide: {
+  [ReaderLineHeight.Wide]: {
     cssValue: "1.9",
     label: "Wide",
+  },
+};
+
+export const readerViews: Record<ReaderView, ReaderViewConfig> = {
+  [ReaderView.Scrolling]: {
+    label: "Scrolling",
+  },
+  [ReaderView.Chapters]: {
+    label: "Chapters",
+  },
+  [ReaderView.Pages]: {
+    label: "Pages",
   },
 };
 
@@ -84,6 +97,10 @@ function isReaderInterval(value: unknown): value is ReaderInterval {
 
 function isReaderLineHeight(value: unknown): value is ReaderLineHeight {
   return typeof value === "string" && value in readerLineHeights;
+}
+
+function isReaderView(value: unknown): value is ReaderView {
+  return typeof value === "string" && value in readerViews;
 }
 
 function normalizeFontSize(value: unknown): number {
@@ -118,13 +135,16 @@ export function loadReaderSettings(): ReaderSettings {
       fontFamily,
       fontSize: normalizeFontSize(storedSettings.fontSize),
       interval: fontFamily === "fast_serif"
-        ? "tight"
+        ? ReaderInterval.Tight
         : isReaderInterval(storedSettings.interval)
         ? storedSettings.interval
         : DEFAULT_READER_SETTINGS.interval,
       lineHeight: isReaderLineHeight(storedSettings.lineHeight)
         ? storedSettings.lineHeight
         : DEFAULT_READER_SETTINGS.lineHeight,
+      view: isReaderView(storedSettings.view)
+        ? storedSettings.view
+        : DEFAULT_READER_SETTINGS.view,
     };
   } catch {
     return DEFAULT_READER_SETTINGS;

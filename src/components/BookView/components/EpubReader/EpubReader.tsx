@@ -9,6 +9,8 @@ import type Contents from "epubjs/types/contents";
 import { EpubViewStyle, ReactReader } from "react-reader";
 import {
   readerFonts,
+  ReaderInterval,
+  ReaderView,
   readerIntervals,
   readerLineHeights,
   readerThemes,
@@ -23,6 +25,7 @@ import "./styles.css";
 type ReaderRendition = Parameters<
   NonNullable<ComponentProps<typeof ReactReader>["getRendition"]>
 >[0];
+type ReaderEpubOptions = ComponentProps<typeof ReactReader>["epubOptions"];
 
 const FONT_STYLESHEET_URL =
   "https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Spectral:wght@400;500;600;700&display=swap";
@@ -91,7 +94,9 @@ function updateTheme(
   const font = readerFonts[settings.fontFamily];
   const interval =
     readerIntervals[
-      settings.fontFamily === "fast_serif" ? "tight" : settings.interval
+      settings.fontFamily === "fast_serif"
+        ? ReaderInterval.Tight
+        : settings.interval
     ];
   const lineHeight = readerLineHeights[settings.lineHeight];
   const fontSize = `${settings.fontSize}px`;
@@ -151,6 +156,28 @@ export default function EpubReader({
 }: EpubReaderProps) {
   const colors = readerThemes[theme];
   const [rendition, setRendition] = useState<ReaderRendition | null>(null);
+  const isChaptersView = settings.view === ReaderView.Chapters;
+  const epubOptions = useMemo<ReaderEpubOptions>(() => {
+    if (settings.view === ReaderView.Scrolling) {
+      return {
+        flow: "scrolled",
+        manager: "continuous",
+      };
+    }
+
+    if (settings.view === ReaderView.Chapters) {
+      return {
+        flow: "scrolled",
+        manager: "default",
+      };
+    }
+
+    return {
+      flow: "paginated",
+      manager: "default",
+      spread: "auto",
+    };
+  }, [settings.view]);
   const themedReaderStyles = useMemo(
     () => ({
       ...readerStyles,
@@ -176,8 +203,18 @@ export default function EpubReader({
         ...readerStyles.swipeWrapper,
         backgroundColor: colors.background,
       },
+      arrow: {
+        ...readerStyles.arrow,
+        color: "transparent",
+        display:
+          settings.view === ReaderView.Pages ? readerStyles.arrow.display : "none",
+      },
+      arrowHover: {
+        ...readerStyles.arrowHover,
+        color: colors.foreground,
+      },
     }),
-    [colors.background, colors.foreground],
+    [colors.background, colors.foreground, settings.view],
   );
   const themedEpubViewStyles = useMemo(
     () => ({
@@ -213,21 +250,61 @@ export default function EpubReader({
     }
   }, [rendition, settings, theme]);
 
+  const handlePreviousChapter = () => {
+    void rendition?.prev();
+  };
+
+  const handleNextChapter = () => {
+    void rendition?.next();
+  };
+
   return (
     <div
       className="epub-reader h-full w-full"
-      style={{ backgroundColor: colors.background }}
+      style={{
+        backgroundColor: colors.background,
+        color: colors.foreground,
+      }}
     >
       <ReactReader
         url={url}
         location={location}
         locationChanged={onLocationChange}
         showToc={false}
+        epubOptions={epubOptions}
         readerStyles={themedReaderStyles}
         epubViewStyles={themedEpubViewStyles}
         getRendition={handleRendition}
         tocChanged={onTocChange}
       />
+      {isChaptersView && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center gap-2">
+          <button
+            type="button"
+            onClick={handlePreviousChapter}
+            className="pointer-events-auto cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium shadow transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: colors.background,
+              borderColor: colors.muted,
+              color: colors.foreground,
+            }}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            onClick={handleNextChapter}
+            className="pointer-events-auto cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium shadow transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: colors.background,
+              borderColor: colors.muted,
+              color: colors.foreground,
+            }}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

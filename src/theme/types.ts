@@ -1,4 +1,8 @@
-export type ReaderTheme = "light" | "dark" | "gray" | "sepia";
+import type {
+  ReaderInterval,
+  ReaderLineHeight,
+  ReaderView,
+} from "../enums";
 
 export type ReaderFontFamily =
   | "cactus_classical_serif"
@@ -6,10 +10,6 @@ export type ReaderFontFamily =
   | "spectral"
   | "inter"
   | "roboto";
-
-export type ReaderInterval = "tight" | "normal" | "wide";
-
-export type ReaderLineHeight = "tight" | "normal" | "wide";
 
 export interface ReaderThemeConfig {
   background: string;
@@ -33,9 +33,14 @@ export interface ReaderLineHeightConfig {
   label: string;
 }
 
+export interface ReaderViewConfig {
+  label: string;
+}
+
 export interface ReaderSettings {
   fontFamily: ReaderFontFamily;
   fontSize: number;
   interval: ReaderInterval;
   lineHeight: ReaderLineHeight;
+  view: ReaderView;
 }

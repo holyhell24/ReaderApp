@@ -4,5 +4,5 @@
 
 .epub-reader button:hover,
 .epub-reader button:focus-visible {
-  color: #111827 !important;
+  color: var(--reader-control-color) !important;
 }
