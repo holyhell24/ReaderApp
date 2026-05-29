@@ -84,3 +84,13 @@ export enum AmbienceType {
   Wolf = "wolf",
   Woodpecker = "woodpecker",
 }
+
+export enum SoundCategory {
+  Animals = "animals",
+  LongAmbients = "long-ambients",
+  Nature = "nature",
+  Places = "places",
+  Rain = "rain",
+  Things = "things",
+  Urban = "urban",
+}

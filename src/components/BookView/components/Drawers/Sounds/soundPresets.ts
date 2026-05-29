@@ -76,12 +76,24 @@ export const soundPresets: SoundPreset[] = [
     },
   },
   {
-    label: "Castle",
+    label: "Castle Horror",
     volumes: {
       [AmbienceType.CastleNight]: 0.3,
       [AmbienceType.Wind]: 0.2,
       [AmbienceType.HowlingWind]: 0.2,
       [AmbienceType.Owl]: 0.2,
+    },
+  },
+  {
+    label: "Castle",
+    volumes: {
+      [AmbienceType.Campfire]: 0.3,
+      [AmbienceType.Fireplace]: 0.5,
+      [AmbienceType.HowlingWind]: 0.5,
+      [AmbienceType.LightRain]: 0.1,
+      [AmbienceType.CrowdedBar]: 0.25,
+      [AmbienceType.SingingBowl]: 0.02,
+      [AmbienceType.WindChimes]: 0.02,
     },
   },
   {

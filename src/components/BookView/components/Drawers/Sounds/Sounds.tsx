@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AmbienceType } from "../../../../../enums";
 import {
-  soundCategories,
   soundTracks,
   type SoundCategory,
   type SoundTrack,
 } from "../../../../../sounds";
 import type { SoundsDrawerProps } from "../types";
 import { soundPresetGroups } from "./soundPresets";
-import type { SoundPreset } from "./types";
+import { soundCategories, type SoundPreset } from "./types";
 
 const CUSTOM_PRESET_LABEL = "Custom";
 const DEFAULT_MASTER_VOLUME_LEVEL = 1;
