@@ -148,9 +148,12 @@ export default function BookView({
 
     async function loadSoundScenes() {
       try {
-        const response = await fetch("/soundScenes/scene.json", {
-          signal: controller.signal,
-        });
+        const response = await fetch(
+          `${import.meta.env.BASE_URL}soundScenes/scene.json`,
+          {
+            signal: controller.signal,
+          },
+        );
 
         if (!response.ok) {
           setSoundScenes([]);
