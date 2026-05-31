@@ -1,23 +1,16 @@
 import { useRef, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import BookListItem from "../components/BookListItem";
-import {
-  removeStoredBook,
-  saveActiveBookId,
-  saveBook,
-  updateStoredBookMetadata,
-} from "../utils/bookStorage";
-import { isEpubFile, parseEpubMetadata } from "../utils/epubMetadata";
+import { isEpubFile } from "../utils/epubMetadata";
 import { readerThemes, type ReaderTheme } from "../theme";
-import type { Book, BookMetadata } from "../types/types";
+import type { Book } from "../types/types";
 
 interface LibraryPageProps {
   activeBookId: string | null;
   books: Book[];
-  onActiveBookChange: (bookId: string | null) => void;
-  onBookAdd: (book: Book) => void;
-  onBookRemove: (bookId: string) => void;
-  onBookUpdate: (bookId: string, metadata: Partial<BookMetadata>) => void;
+  onBookAdd: (file: File) => Promise<string | null>;
+  onBookRemove: (bookId: string) => Promise<void>;
+  onBookSelect: (bookId: string | null) => void;
   onThemeChange: (theme: ReaderTheme) => void;
   theme: ReaderTheme;
 }
@@ -25,10 +18,9 @@ interface LibraryPageProps {
 export default function LibraryPage({
   activeBookId,
   books,
-  onActiveBookChange,
   onBookAdd,
   onBookRemove,
-  onBookUpdate,
+  onBookSelect,
   onThemeChange,
   theme,
 }: LibraryPageProps) {
@@ -48,36 +40,20 @@ export default function LibraryPage({
       return;
     }
 
-    const id = crypto.randomUUID();
-    const url = await file.arrayBuffer();
-    const title = file.name.replace(/\.epub$/i, "");
+    const bookId = await onBookAdd(file);
 
-    onBookAdd({ id, url, title });
-    void saveActiveBookId(id);
-    void saveBook(id, file, { title }, url);
-
-    const metadata = await parseEpubMetadata(file);
-    onBookUpdate(id, metadata);
-    void updateStoredBookMetadata(id, metadata);
-
-    navigate(`/read/${id}`);
+    if (bookId) {
+      navigate(`/read/${bookId}`);
+    }
   };
 
   const handleSelectBook = (bookId: string) => {
-    onActiveBookChange(bookId);
-    void saveActiveBookId(bookId);
+    onBookSelect(bookId);
     navigate(`/read/${bookId}`);
   };
 
   const handleRemoveBook = (bookId: string) => {
-    const remainingBooks = books.filter((book) => book.id !== bookId);
-    const nextActiveBookId =
-      activeBookId === bookId
-        ? (remainingBooks[0]?.id ?? null)
-        : activeBookId;
-
-    onBookRemove(bookId);
-    void removeStoredBook(bookId).then(() => saveActiveBookId(nextActiveBookId));
+    void onBookRemove(bookId);
   };
 
   return (
