@@ -1,4 +1,5 @@
 import type { Book, BookMetadata } from "../types/types";
+import { parseEpubMetadataFromData } from "./epubMetadata";
 import type { LibraryMeta, StoredBook } from "./types";
 
 const DB_NAME = "reader-app";
@@ -51,6 +52,14 @@ function getFromStore<T>(store: IDBObjectStore, key: string): Promise<T | undefi
 function putInStore(store: IDBObjectStore, value: StoredBook): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = store.put(value);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function deleteFromStore(store: IDBObjectStore, key: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const request = store.delete(key);
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
   });
@@ -126,6 +135,29 @@ export async function updateStoredBookMetadata(
   });
 }
 
+function shouldRefreshStoredMetadata(stored: StoredBook): boolean {
+  const fileTitle = stored.fileName.replace(/\.epub$/i, "");
+
+  return (
+    !stored.description ||
+    stored.title === fileTitle ||
+    stored.title === stored.fileName
+  );
+}
+
+export async function removeStoredBook(id: string): Promise<void> {
+  await runTransaction("readwrite", (store) => deleteFromStore(store, id));
+
+  const meta = readLibraryMeta();
+  const readerLocations = { ...(meta.readerLocations ?? {}) };
+  delete readerLocations[id];
+
+  writeLibraryMeta({
+    activeBookId: meta.activeBookId === id ? null : meta.activeBookId,
+    readerLocations,
+  });
+}
+
 export async function saveActiveBookId(activeBookId: string | null): Promise<void> {
   writeLibraryMeta({ ...readLibraryMeta(), activeBookId });
 }
@@ -155,7 +187,30 @@ export async function loadLibrary(): Promise<{
   );
   const meta = readLibraryMeta();
 
-  const items = storedBooks.map(storedBookToBook);
+  const refreshedBooks = await Promise.all(
+    storedBooks.map(async (storedBook) => {
+      if (!shouldRefreshStoredMetadata(storedBook)) {
+        return storedBook;
+      }
+
+      const metadata = await parseEpubMetadataFromData(
+        storedBook.data,
+        storedBook.fileName,
+      );
+
+      const refreshedBook = {
+        ...storedBook,
+        ...metadata,
+        title: metadata.title || storedBook.title,
+      };
+
+      void updateStoredBookMetadata(storedBook.id, metadata);
+
+      return refreshedBook;
+    }),
+  );
+
+  const items = refreshedBooks.map(storedBookToBook);
   const activeBookId =
     meta.activeBookId && items.some((book) => book.id === meta.activeBookId)
       ? meta.activeBookId

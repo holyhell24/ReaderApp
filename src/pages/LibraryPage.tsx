@@ -1,30 +1,39 @@
 import { useRef, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import BookListItem from "../components/BookListItem";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { addBook, setActiveBook, updateBook } from "../store/booksSlice";
 import {
+  removeStoredBook,
   saveActiveBookId,
   saveBook,
   updateStoredBookMetadata,
 } from "../utils/bookStorage";
 import { isEpubFile, parseEpubMetadata } from "../utils/epubMetadata";
 import { readerThemes, type ReaderTheme } from "../theme";
+import type { Book, BookMetadata } from "../types/types";
 
 interface LibraryPageProps {
+  activeBookId: string | null;
+  books: Book[];
+  onActiveBookChange: (bookId: string | null) => void;
+  onBookAdd: (book: Book) => void;
+  onBookRemove: (bookId: string) => void;
+  onBookUpdate: (bookId: string, metadata: Partial<BookMetadata>) => void;
   onThemeChange: (theme: ReaderTheme) => void;
   theme: ReaderTheme;
 }
 
 export default function LibraryPage({
+  activeBookId,
+  books,
+  onActiveBookChange,
+  onBookAdd,
+  onBookRemove,
+  onBookUpdate,
   onThemeChange,
   theme,
 }: LibraryPageProps) {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const books = useAppSelector((state) => state.books.items);
-  const activeBookId = useAppSelector((state) => state.books.activeBookId);
   const themeColors = readerThemes[theme];
 
   const handleAddBook = () => {
@@ -43,21 +52,32 @@ export default function LibraryPage({
     const url = await file.arrayBuffer();
     const title = file.name.replace(/\.epub$/i, "");
 
-    dispatch(addBook({ id, url, title }));
+    onBookAdd({ id, url, title });
     void saveActiveBookId(id);
     void saveBook(id, file, { title }, url);
 
     const metadata = await parseEpubMetadata(file);
-    dispatch(updateBook({ id, ...metadata }));
+    onBookUpdate(id, metadata);
     void updateStoredBookMetadata(id, metadata);
 
     navigate(`/read/${id}`);
   };
 
   const handleSelectBook = (bookId: string) => {
-    dispatch(setActiveBook(bookId));
+    onActiveBookChange(bookId);
     void saveActiveBookId(bookId);
     navigate(`/read/${bookId}`);
+  };
+
+  const handleRemoveBook = (bookId: string) => {
+    const remainingBooks = books.filter((book) => book.id !== bookId);
+    const nextActiveBookId =
+      activeBookId === bookId
+        ? (remainingBooks[0]?.id ?? null)
+        : activeBookId;
+
+    onBookRemove(bookId);
+    void removeStoredBook(bookId).then(() => saveActiveBookId(nextActiveBookId));
   };
 
   return (
@@ -127,6 +147,7 @@ export default function LibraryPage({
               key={book.id}
               book={book}
               isActive={book.id === activeBookId}
+              onRemove={() => handleRemoveBook(book.id)}
               onSelect={() => handleSelectBook(book.id)}
               theme={theme}
             />

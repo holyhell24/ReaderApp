@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import BookView from "../components/BookView";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { setActiveBook } from "../store/booksSlice";
 import type { ReaderSettings, ReaderTheme } from "../theme";
+import type { Book } from "../types/types";
 import { saveActiveBookId } from "../utils/bookStorage";
 
 interface ReaderPageProps {
+  books: Book[];
+  onActiveBookChange: (bookId: string | null) => void;
   onSettingsChange: (settings: ReaderSettings) => void;
   onSettingsReset: () => void;
   onThemeChange: (theme: ReaderTheme) => void;
@@ -15,6 +16,8 @@ interface ReaderPageProps {
 }
 
 export default function ReaderPage({
+  books,
+  onActiveBookChange,
   onSettingsChange,
   onSettingsReset,
   onThemeChange,
@@ -22,17 +25,14 @@ export default function ReaderPage({
   theme,
 }: ReaderPageProps) {
   const { bookId } = useParams<{ bookId: string }>();
-  const dispatch = useAppDispatch();
-  const book = useAppSelector((state) =>
-    state.books.items.find((item) => item.id === bookId),
-  );
+  const book = books.find((item) => item.id === bookId);
 
   useEffect(() => {
     if (bookId) {
-      dispatch(setActiveBook(bookId));
+      onActiveBookChange(bookId);
       void saveActiveBookId(bookId);
     }
-  }, [bookId, dispatch]);
+  }, [bookId, onActiveBookChange]);
 
   if (!bookId || !book) {
     return <Navigate to="/" replace />;

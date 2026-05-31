@@ -8,6 +8,55 @@ import { soundCategories, type SoundPreset } from "./types";
 
 const CUSTOM_PRESET_LABEL = "Custom";
 const DEFAULT_MASTER_VOLUME_LEVEL = 1;
+const SOUND_SETTINGS_STORAGE_KEY = "reader-app-sound-settings";
+
+interface SoundSettings {
+  isMuted: boolean;
+  isRunning: boolean;
+  volume: number;
+}
+
+interface ApplyPresetOptions {
+  play?: boolean;
+}
+
+function clampVolume(value: number): number {
+  return Math.min(Math.max(value, 0), 1);
+}
+
+function loadSoundSettings(): SoundSettings {
+  try {
+    const raw = localStorage.getItem(SOUND_SETTINGS_STORAGE_KEY);
+    if (!raw) {
+      return {
+        isMuted: false,
+        isRunning: true,
+        volume: DEFAULT_MASTER_VOLUME_LEVEL,
+      };
+    }
+
+    const settings = JSON.parse(raw) as Partial<SoundSettings>;
+
+    return {
+      isMuted: settings.isMuted ?? false,
+      isRunning: settings.isRunning ?? true,
+      volume:
+        typeof settings.volume === "number"
+          ? clampVolume(settings.volume)
+          : DEFAULT_MASTER_VOLUME_LEVEL,
+    };
+  } catch {
+    return {
+      isMuted: false,
+      isRunning: true,
+      volume: DEFAULT_MASTER_VOLUME_LEVEL,
+    };
+  }
+}
+
+function saveSoundSettings(settings: SoundSettings): void {
+  localStorage.setItem(SOUND_SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+}
 
 function formatPercent(value: number): string {
   return `${Math.round(value * 100)}%`;
@@ -37,11 +86,15 @@ export default function Sounds({
   const appliedSceneSoundPresetKeyRef = useRef<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const soundSettings = useMemo(() => loadSoundSettings(), []);
   const [activePreset, setActivePreset] = useState(CUSTOM_PRESET_LABEL);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isAutoAmbientEnabled, setIsAutoAmbientEnabled] = useState(
+    soundSettings.isRunning,
+  );
+  const [isMuted, setIsMuted] = useState(soundSettings.isMuted);
   const [isRunning, setIsRunning] = useState(false);
-  const [masterVolume, setMasterVolume] = useState(DEFAULT_MASTER_VOLUME_LEVEL);
+  const [volume, setVolume] = useState(soundSettings.volume);
   const [trackVolumes, setTrackVolumes] = useState<
     Partial<Record<AmbienceType, number>>
   >({});
@@ -89,37 +142,47 @@ export default function Sounds({
       const audio = audioRefs.current[track.id];
       if (!audio) return;
 
-      audio.volume = (trackVolumes[track.id] ?? 0) * masterVolume;
+      audio.volume = (trackVolumes[track.id] ?? 0) * volume;
       audio.muted = isMuted;
     });
-  }, [isMuted, masterVolume, trackVolumes]);
+  }, [isMuted, trackVolumes, volume]);
 
-  const playTrack = useCallback((trackId: AmbienceType, volume: number) => {
+  useEffect(() => {
+    saveSoundSettings({
+      isMuted,
+      isRunning: isAutoAmbientEnabled,
+      volume,
+    });
+  }, [isAutoAmbientEnabled, isMuted, volume]);
+
+  const playTrack = useCallback((trackId: AmbienceType, trackVolume: number) => {
     const audio = audioRefs.current[trackId];
     if (!audio) return;
 
-    audio.volume = volume * masterVolume;
+    audio.volume = trackVolume * volume;
     audio.muted = isMuted;
 
-    if (volume <= 0) {
+    if (trackVolume <= 0) {
       audio.pause();
       return;
     }
 
     setIsRunning(true);
     void audio.play();
-  }, [isMuted, masterVolume]);
+  }, [isMuted, volume]);
 
-  const handleTrackVolumeChange = (trackId: AmbienceType, volume: number) => {
+  const handleTrackVolumeChange = (trackId: AmbienceType, trackVolume: number) => {
     setActivePreset(CUSTOM_PRESET_LABEL);
     setTrackVolumes((volumes) => ({
       ...volumes,
-      [trackId]: volume,
+      [trackId]: trackVolume,
     }));
-    playTrack(trackId, volume);
+    playTrack(trackId, trackVolume);
   };
 
-  const applyPreset = useCallback((preset: SoundPreset) => {
+  const applyPreset = useCallback((preset: SoundPreset, options?: ApplyPresetOptions) => {
+    const shouldPlay = options?.play ?? true;
+
     Object.values(audioRefs.current).forEach((audio) => {
       audio?.pause();
     });
@@ -127,6 +190,10 @@ export default function Sounds({
     setActivePreset(preset.label);
     setTrackVolumes(preset.volumes);
     setIsRunning(false);
+
+    if (!shouldPlay) return;
+
+    setIsAutoAmbientEnabled(true);
 
     Object.entries(preset.volumes).forEach(([trackId, volume]) => {
       playTrack(trackId as AmbienceType, volume);
@@ -147,11 +214,17 @@ export default function Sounds({
 
     const timeoutId = window.setTimeout(() => {
       appliedSceneSoundPresetKeyRef.current = sceneSoundPresetKey;
-      applyPreset(preset);
+      applyPreset(preset, { play: isAutoAmbientEnabled });
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [applyPreset, presetByLabel, sceneSoundPreset, sceneSoundPresetKey]);
+  }, [
+    applyPreset,
+    isAutoAmbientEnabled,
+    presetByLabel,
+    sceneSoundPreset,
+    sceneSoundPresetKey,
+  ]);
 
   const startAmbient = () => {
     let hasActiveTrack = false;
@@ -165,6 +238,7 @@ export default function Sounds({
     });
 
     setIsRunning(hasActiveTrack);
+    setIsAutoAmbientEnabled(hasActiveTrack);
   };
 
   const stopAmbient = () => {
@@ -172,6 +246,16 @@ export default function Sounds({
       audio?.pause();
     });
     setIsRunning(false);
+    setIsAutoAmbientEnabled(false);
+  };
+
+  const handleMuteToggle = () => {
+    setIsMuted((muted) => !muted);
+  };
+
+  const handleVolumeChange = (nextVolume: number) => {
+    setVolume(clampVolume(nextVolume));
+    setIsMuted(nextVolume <= 0);
   };
 
   const toggleAmbient = () => {
@@ -224,7 +308,7 @@ export default function Sounds({
       </button>
       <button
         type="button"
-        onClick={() => setIsMuted((muted) => !muted)}
+        onClick={handleMuteToggle}
         className="cursor-pointer whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80"
         style={{
           borderColor: themeColors.muted,
@@ -234,19 +318,19 @@ export default function Sounds({
         {isMuted ? "Unmute" : "Mute"}
       </button>
       <label className="flex min-w-32 items-center gap-2 text-xs">
-        <span style={{ color: themeColors.muted }}>Master</span>
+        <span style={{ color: themeColors.muted }}>Volume</span>
         <input
           type="range"
           min={0}
           max={1}
           step={0.01}
-          value={masterVolume}
-          aria-label="Master ambient volume"
-          onChange={(event) => setMasterVolume(Number(event.target.value))}
+          value={isMuted ? 0 : volume}
+          aria-label="Ambient volume"
+          onChange={(event) => handleVolumeChange(Number(event.target.value))}
           className="w-28 cursor-pointer"
         />
         <span className="w-8" style={{ color: themeColors.muted }}>
-          {formatPercent(masterVolume)}
+          {formatPercent(isMuted ? 0 : volume)}
         </span>
       </label>
 
