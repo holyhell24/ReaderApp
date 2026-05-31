@@ -3,17 +3,7 @@ import { useNavigate } from "react-router-dom";
 import BookListItem from "../components/BookListItem";
 import { isEpubFile } from "../utils/epubMetadata";
 import { readerThemes, type ReaderTheme } from "../theme";
-import type { Book } from "../types/types";
-
-interface LibraryPageProps {
-  activeBookId: string | null;
-  books: Book[];
-  onBookAdd: (file: File) => Promise<string | null>;
-  onBookRemove: (bookId: string) => Promise<void>;
-  onBookSelect: (bookId: string | null) => void;
-  onThemeChange: (theme: ReaderTheme) => void;
-  theme: ReaderTheme;
-}
+import type { LibraryPageProps } from "./types";
 
 export default function LibraryPage({
   activeBookId,

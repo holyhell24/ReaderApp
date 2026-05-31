@@ -10,6 +10,16 @@ export interface SoundPresetGroup {
   presets: SoundPreset[];
 }
 
+export interface SoundSettings {
+  isMuted: boolean;
+  isRunning: boolean;
+  volume: number;
+}
+
+export interface ApplyPresetOptions {
+  play?: boolean;
+}
+
 export const soundCategories: SoundCategory[] = [
   SoundCategory.Nature,
   SoundCategory.Rain,

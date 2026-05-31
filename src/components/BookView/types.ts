@@ -15,3 +15,10 @@ export interface ReaderTocItem {
   label: string;
   subitems?: ReaderTocItem[];
 }
+
+export interface TocMatch {
+  href: string;
+  index: number;
+  label: string;
+  parentLabel?: string;
+}

@@ -1,19 +1,8 @@
 import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import BookView from "../components/BookView";
-import type { ReaderSettings, ReaderTheme } from "../theme";
-import type { Book } from "../types/types";
 import { saveActiveBookId } from "../utils/bookStorage";
-
-interface ReaderPageProps {
-  books: Book[];
-  onActiveBookChange: (bookId: string | null) => void;
-  onSettingsChange: (settings: ReaderSettings) => void;
-  onSettingsReset: () => void;
-  onThemeChange: (theme: ReaderTheme) => void;
-  settings: ReaderSettings;
-  theme: ReaderTheme;
-}
+import type { ReaderPageProps } from "./types";
 
 export default function ReaderPage({
   books,
