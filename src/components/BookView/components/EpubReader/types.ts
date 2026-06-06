@@ -5,9 +5,11 @@ import type { ReaderSettings, ReaderTheme } from "../../../../theme";
 import type { ReaderTocItem } from "../../types";
 
 export interface EpubReaderProps {
+  isChromeVisible: boolean;
   location: string | number;
   onCurrentHrefChange: (href: string) => void;
   onLocationChange: (location: string) => void;
+  onReaderClick: () => void;
   onTocChange: (toc: ReaderTocItem[]) => void;
   settings: ReaderSettings;
   theme: ReaderTheme;

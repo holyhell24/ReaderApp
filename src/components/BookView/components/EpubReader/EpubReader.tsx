@@ -27,9 +27,11 @@ import {
 import "./styles.css";
 
 export default function EpubReader({
+  isChromeVisible,
   location,
   onCurrentHrefChange,
   onLocationChange,
+  onReaderClick,
   onTocChange,
   settings,
   theme,
@@ -150,12 +152,13 @@ export default function EpubReader({
       nextRendition.hooks.content.register(addFontStylesheet);
       nextRendition.hooks.content.register((contents: Contents) => {
         applyContentStyles(contents, themeRef.current, settingsRef.current);
+        contents.document.addEventListener("click", onReaderClick);
       });
       applyChapterStyles(nextRendition, theme, settings);
       setRendition(nextRendition);
       updateTheme(nextRendition, theme, settings);
     },
-    [onCurrentHrefChange, settings, theme],
+    [onCurrentHrefChange, onReaderClick, settings, theme],
   );
 
   useEffect(() => {
@@ -176,6 +179,7 @@ export default function EpubReader({
   return (
     <div
       className={"epub-reader h-full w-full epub-reader--vertical-scroll"}
+      onClick={onReaderClick}
       style={
         {
           "--reader-control-color": colors.foreground,
@@ -196,8 +200,11 @@ export default function EpubReader({
         getRendition={handleRendition}
         tocChanged={onTocChange}
       />
-      {isChaptersView && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center gap-2">
+      {isChaptersView && isChromeVisible && (
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center gap-2"
+          onClick={(event) => event.stopPropagation()}
+        >
           <button
             type="button"
             onClick={handlePreviousChapter}

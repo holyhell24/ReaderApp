@@ -28,6 +28,7 @@ export default function BookView({
     () => loadBookLocation(book.id) ?? 0,
   );
   const [currentReaderHref, setCurrentReaderHref] = useState<string | null>(null);
+  const [isChromeVisible, setIsChromeVisible] = useState(false);
   const [soundScenes, setSoundScenes] = useState<SoundScene[]>([]);
   const [toc, setToc] = useState<ReaderTocItem[]>([]);
   const themeColors = readerThemes[theme];
@@ -40,6 +41,10 @@ export default function BookView({
   }, [currentReaderHref, soundScenes, tocMatches]);
 
   const closeDrawer = () => setDrawerType(null);
+
+  const toggleChrome = useCallback(() => {
+    setIsChromeVisible((isVisible) => !isVisible);
+  }, []);
 
   const handleChapterSelect = (href: string) => {
     setReaderLocation(href);
@@ -98,14 +103,17 @@ export default function BookView({
 
   return (
     <main
-      className="flex h-dvh w-full flex-col"
+      className="relative flex h-dvh w-full flex-col overflow-hidden"
       style={{
         backgroundColor: themeColors.background,
         color: themeColors.foreground,
       }}
     >
       <header
-        className="grid w-full shrink-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 border-b px-4 py-2"
+        className={`absolute inset-x-0 top-0 z-20 grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 border-b px-4 py-2 shadow-sm transition-opacity ${
+          isChromeVisible ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={(event) => event.stopPropagation()}
         style={{
           backgroundColor: themeColors.background,
           borderColor: themeColors.muted,
@@ -179,9 +187,11 @@ export default function BookView({
         <div className="min-h-0 min-w-0 flex-1">
           <EpubReader
             key={`${book.id}-${settings.view}`}
+            isChromeVisible={isChromeVisible}
             location={readerLocation}
             onCurrentHrefChange={handleCurrentHrefChange}
             onLocationChange={handleLocationChange}
+            onReaderClick={toggleChrome}
             onTocChange={setToc}
             settings={settings}
             theme={theme}
