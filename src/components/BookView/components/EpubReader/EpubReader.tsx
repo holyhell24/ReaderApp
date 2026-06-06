@@ -88,6 +88,7 @@ export default function EpubReader({
       reader: {
         ...readerStyles.reader,
         backgroundColor: colors.background,
+        right: 0,
       },
       swipeWrapper: {
         ...readerStyles.swipeWrapper,
@@ -97,7 +98,9 @@ export default function EpubReader({
         ...readerStyles.arrow,
         color: "transparent",
         display:
-          settings.view === ReaderView.Pages ? readerStyles.arrow.display : "none",
+          settings.view === ReaderView.Pages
+            ? readerStyles.arrow.display
+            : "none",
       },
       arrowHover: {
         ...readerStyles.arrowHover,
@@ -172,12 +175,14 @@ export default function EpubReader({
 
   return (
     <div
-      className="epub-reader h-full w-full"
-      style={{
-        "--reader-control-color": colors.foreground,
-        backgroundColor: colors.background,
-        color: colors.foreground,
-      } as CSSProperties}
+      className={"epub-reader h-full w-full epub-reader--vertical-scroll"}
+      style={
+        {
+          "--reader-control-color": colors.foreground,
+          backgroundColor: colors.background,
+          color: colors.foreground,
+        } as CSSProperties
+      }
     >
       <ReactReader
         key={`${settings.view}-${theme}`}

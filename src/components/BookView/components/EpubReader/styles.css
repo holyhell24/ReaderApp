@@ -1,5 +1,41 @@
 .epub-reader {
+  max-width: 100%;
+  overflow: hidden;
   position: relative;
+  width: 100%;
+}
+
+.epub-reader--vertical-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.epub-reader--vertical-scroll > div {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.epub-reader--vertical-scroll .epub-container,
+.epub-reader--vertical-scroll .epub-view {
+  box-sizing: border-box !important;
+  left: 0 !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  right: auto !important;
+  width: 100% !important;
+}
+
+.epub-reader--vertical-scroll .epub-container {
+  overflow-y: auto !important;
+}
+
+.epub-reader--vertical-scroll iframe {
+  display: block;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  width: 100% !important;
 }
 
 .epub-reader button:hover,
