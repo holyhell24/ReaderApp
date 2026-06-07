@@ -28,6 +28,7 @@ export default function BookView({
     () => loadBookLocation(book.id) ?? 0,
   );
   const [currentReaderHref, setCurrentReaderHref] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isChromeVisible, setIsChromeVisible] = useState(false);
   const [soundScenes, setSoundScenes] = useState<SoundScene[]>([]);
   const [toc, setToc] = useState<ReaderTocItem[]>([]);
@@ -69,6 +70,19 @@ export default function BookView({
     setCurrentReaderHref(href);
   }, []);
 
+  const handleFullscreenToggle = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+        return;
+      }
+
+      await document.documentElement.requestFullscreen();
+    } catch (error) {
+      console.warn("Unable to toggle fullscreen", error);
+    }
+  };
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -99,6 +113,19 @@ export default function BookView({
     void loadSoundScenes();
 
     return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    handleFullscreenChange();
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
   }, []);
 
   return (
@@ -154,6 +181,18 @@ export default function BookView({
           themeColors={themeColors}
         />
         <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            aria-pressed={isFullscreen}
+            onClick={handleFullscreenToggle}
+            className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80"
+            style={{
+              borderColor: themeColors.muted,
+              color: themeColors.foreground,
+            }}
+          >
+            Fullscreen
+          </button>
           <button
             type="button"
             aria-expanded={drawerType === DrawerType.Chapters}
