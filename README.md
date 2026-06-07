@@ -2,7 +2,7 @@
 
 ReaderApp is a local-first EPUB reader built with React, TypeScript, Vite, Tailwind CSS, and `react-reader`.
 
-It is a fully vibecoded project
+This is a fully vibecoded project.
 
 ## Features
 
