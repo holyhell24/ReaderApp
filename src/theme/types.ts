@@ -38,6 +38,7 @@ export interface ReaderViewConfig {
 }
 
 export interface ReaderSettings {
+  appBrightness: number;
   fontFamily: ReaderFontFamily;
   fontSize: number;
   interval: ReaderInterval;

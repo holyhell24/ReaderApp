@@ -50,6 +50,7 @@ function App() {
         style={{
           backgroundColor: themeColors.background,
           color: themeColors.foreground,
+          filter: `brightness(${readerSettings.appBrightness}%)`,
         }}
       >
         <p style={{ color: themeColors.muted }}>Loading library...</p>
@@ -63,6 +64,7 @@ function App() {
       style={{
         backgroundColor: themeColors.background,
         color: themeColors.foreground,
+        filter: `brightness(${readerSettings.appBrightness}%)`,
       }}
     >
       <Routes>

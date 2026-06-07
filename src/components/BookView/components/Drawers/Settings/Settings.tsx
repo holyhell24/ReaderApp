@@ -1,6 +1,9 @@
 import {
+  MAX_READER_APP_BRIGHTNESS,
   MAX_READER_FONT_SIZE,
+  MIN_READER_APP_BRIGHTNESS,
   MIN_READER_FONT_SIZE,
+  READER_APP_BRIGHTNESS_STEP,
   READER_FONT_SIZE_STEP,
   readerFonts,
   readerIntervals,
@@ -26,6 +29,16 @@ export default function Settings({
   themeColors,
 }: SettingsDrawerProps) {
   const isBionicalSelected = settings.fontFamily === "fast_serif";
+
+  const handleAppBrightnessChange = (appBrightness: number) => {
+    onSettingsChange({
+      ...settings,
+      appBrightness: Math.min(
+        MAX_READER_APP_BRIGHTNESS,
+        Math.max(MIN_READER_APP_BRIGHTNESS, appBrightness),
+      ),
+    });
+  };
 
   const handleFontSizeChange = (change: number) => {
     onSettingsChange({
@@ -136,6 +149,34 @@ export default function Settings({
             </button>
           ))}
         </div>
+      </div>
+      <div className="mt-6">
+        <h3
+          className="mb-2 text-sm font-medium"
+          style={{ color: themeColors.foreground }}
+        >
+          App brightness
+        </h3>
+        <label className="grid gap-2 text-sm">
+          <div className="flex items-center justify-between gap-3">
+            <span style={{ color: themeColors.muted }}>Brightness</span>
+            <span style={{ color: themeColors.foreground }}>
+              {settings.appBrightness}%
+            </span>
+          </div>
+          <input
+            type="range"
+            min={MIN_READER_APP_BRIGHTNESS}
+            max={MAX_READER_APP_BRIGHTNESS}
+            step={READER_APP_BRIGHTNESS_STEP}
+            value={settings.appBrightness}
+            aria-label="App brightness"
+            onChange={(event) =>
+              handleAppBrightnessChange(Number(event.target.value))
+            }
+            className="w-full cursor-pointer"
+          />
+        </label>
       </div>
       <div className="mt-6">
         <h3

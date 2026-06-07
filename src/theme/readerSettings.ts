@@ -11,6 +11,7 @@ import { ReaderInterval, ReaderLineHeight, ReaderView } from "../enums";
 const STORAGE_KEY = "reader-app-settings";
 
 export const DEFAULT_READER_SETTINGS: ReaderSettings = {
+  appBrightness: 100,
   fontFamily: "cactus_classical_serif",
   fontSize: 20,
   interval: ReaderInterval.Normal,
@@ -19,6 +20,9 @@ export const DEFAULT_READER_SETTINGS: ReaderSettings = {
   wordInterval: ReaderInterval.Normal,
 };
 
+export const MIN_READER_APP_BRIGHTNESS = 50;
+export const MAX_READER_APP_BRIGHTNESS = 100;
+export const READER_APP_BRIGHTNESS_STEP = 1;
 export const MIN_READER_FONT_SIZE = 12;
 export const MAX_READER_FONT_SIZE = 36;
 export const READER_FONT_SIZE_STEP = 2;
@@ -137,6 +141,17 @@ function normalizeFontSize(value: unknown): number {
   );
 }
 
+function normalizeAppBrightness(value: unknown): number {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return DEFAULT_READER_SETTINGS.appBrightness;
+  }
+
+  return Math.min(
+    MAX_READER_APP_BRIGHTNESS,
+    Math.max(MIN_READER_APP_BRIGHTNESS, value),
+  );
+}
+
 export function loadReaderSettings(): ReaderSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -151,6 +166,7 @@ export function loadReaderSettings(): ReaderSettings {
         : DEFAULT_READER_SETTINGS.fontFamily;
 
     return {
+      appBrightness: normalizeAppBrightness(storedSettings.appBrightness),
       fontFamily,
       fontSize: normalizeFontSize(storedSettings.fontSize),
       interval: fontFamily === "fast_serif"
