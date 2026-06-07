@@ -8,6 +8,7 @@ export {
   readerIntervals,
   readerLineHeights,
   readerViews,
+  readerWordIntervals,
   saveReaderSettings,
 } from "./readerSettings";
 export {

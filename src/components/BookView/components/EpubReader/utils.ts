@@ -5,6 +5,7 @@ import {
   readerIntervals,
   readerLineHeights,
   readerThemes,
+  readerWordIntervals,
   type ReaderSettings,
   type ReaderTheme,
 } from "../../../../theme";
@@ -27,6 +28,7 @@ export function themeRules(theme: ReaderTheme, settings: ReaderSettings) {
         : settings.interval
     ];
   const lineHeight = readerLineHeights[settings.lineHeight];
+  const wordInterval = readerWordIntervals[settings.wordInterval];
 
   return {
     a: {
@@ -39,6 +41,7 @@ export function themeRules(theme: ReaderTheme, settings: ReaderSettings) {
       fontSize: `${settings.fontSize}px !important`,
       letterSpacing: `${interval.cssValue} !important`,
       lineHeight: `${lineHeight.cssValue} !important`,
+      wordSpacing: `${wordInterval.cssValue} !important`,
     },
     h1: {
       background: "transparent !important",
@@ -58,11 +61,13 @@ export function themeRules(theme: ReaderTheme, settings: ReaderSettings) {
       fontSize: `${settings.fontSize}px !important`,
       letterSpacing: `${interval.cssValue} !important`,
       lineHeight: `${lineHeight.cssValue} !important`,
+      wordSpacing: `${wordInterval.cssValue} !important`,
     },
     p: {
       color: `${colors.foreground} !important`,
       letterSpacing: `${interval.cssValue} !important`,
       lineHeight: `${lineHeight.cssValue} !important`,
+      wordSpacing: `${wordInterval.cssValue} !important`,
     },
   };
 }
@@ -135,6 +140,7 @@ export function updateTheme(
         : settings.interval
     ];
   const lineHeight = readerLineHeights[settings.lineHeight];
+  const wordInterval = readerWordIntervals[settings.wordInterval];
   const fontSize = `${settings.fontSize}px`;
 
   rendition.themes?.register(theme, themeRules(theme, settings));
@@ -147,6 +153,7 @@ export function updateTheme(
   rendition.themes?.override("font-size", fontSize, true);
   rendition.themes?.override("letter-spacing", interval.cssValue, true);
   rendition.themes?.override("line-height", lineHeight.cssValue, true);
+  rendition.themes?.override("word-spacing", wordInterval.cssValue, true);
   applyRenditionContentStyles(rendition, theme, settings);
 }
 

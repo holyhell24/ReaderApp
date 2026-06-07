@@ -43,4 +43,5 @@ export interface ReaderSettings {
   interval: ReaderInterval;
   lineHeight: ReaderLineHeight;
   view: ReaderView;
+  wordInterval: ReaderInterval;
 }

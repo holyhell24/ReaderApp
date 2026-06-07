@@ -7,6 +7,7 @@ import {
   readerLineHeights,
   readerThemes,
   readerViews,
+  readerWordIntervals,
   ReaderInterval,
   type ReaderFontFamily,
   type ReaderLineHeight,
@@ -60,6 +61,13 @@ export default function Settings({
     onSettingsChange({
       ...settings,
       lineHeight,
+    });
+  };
+
+  const handleWordIntervalChange = (wordInterval: ReaderInterval) => {
+    onSettingsChange({
+      ...settings,
+      wordInterval,
     });
   };
 
@@ -137,31 +145,33 @@ export default function Settings({
           Font
         </h3>
         <div className="grid gap-2">
-          {(Object.keys(readerFonts) as ReaderFontFamily[]).map((fontFamily) => (
-            <button
-              key={fontFamily}
-              type="button"
-              onClick={() => handleFontFamilyChange(fontFamily)}
-              className="cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium transition-opacity hover:opacity-80"
-              style={{
-                backgroundColor:
-                  settings.fontFamily === fontFamily
-                    ? themeColors.foreground
-                    : "transparent",
-                borderColor:
-                  settings.fontFamily === fontFamily
-                    ? themeColors.foreground
-                    : themeColors.muted,
-                color:
-                  settings.fontFamily === fontFamily
-                    ? themeColors.background
-                    : themeColors.foreground,
-                fontFamily: readerFonts[fontFamily].cssValue,
-              }}
-            >
-              {readerFonts[fontFamily].label}
-            </button>
-          ))}
+          {(Object.keys(readerFonts) as ReaderFontFamily[]).map(
+            (fontFamily) => (
+              <button
+                key={fontFamily}
+                type="button"
+                onClick={() => handleFontFamilyChange(fontFamily)}
+                className="cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor:
+                    settings.fontFamily === fontFamily
+                      ? themeColors.foreground
+                      : "transparent",
+                  borderColor:
+                    settings.fontFamily === fontFamily
+                      ? themeColors.foreground
+                      : themeColors.muted,
+                  color:
+                    settings.fontFamily === fontFamily
+                      ? themeColors.background
+                      : themeColors.foreground,
+                  fontFamily: readerFonts[fontFamily].cssValue,
+                }}
+              >
+                {readerFonts[fontFamily].label}
+              </button>
+            ),
+          )}
         </div>
       </div>
       <div className="mt-6">
@@ -180,7 +190,9 @@ export default function Settings({
               className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80"
               style={{
                 backgroundColor:
-                  settings.view === view ? themeColors.foreground : "transparent",
+                  settings.view === view
+                    ? themeColors.foreground
+                    : "transparent",
                 borderColor:
                   settings.view === view
                     ? themeColors.foreground
@@ -244,70 +256,118 @@ export default function Settings({
           className="mb-2 text-sm font-medium"
           style={{ color: themeColors.foreground }}
         >
-          Interval
+          Intervals
         </h3>
-        <div className="grid grid-cols-3 gap-2">
-          {(Object.keys(readerIntervals) as ReaderInterval[]).map((interval) => (
-            <button
-              key={interval}
-              type="button"
-              disabled={isBionicalSelected}
-              onClick={() => handleIntervalChange(interval)}
-              className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-              style={{
-                backgroundColor:
-                  settings.interval === interval
-                    ? themeColors.foreground
-                    : "transparent",
-                borderColor:
-                  settings.interval === interval
-                    ? themeColors.foreground
-                    : themeColors.muted,
-                color:
-                  settings.interval === interval
-                    ? themeColors.background
-                    : themeColors.foreground,
-              }}
+        <div className="grid gap-4">
+          <div>
+            <p
+              className="mb-2 text-xs font-medium"
+              style={{ color: themeColors.muted }}
             >
-              {readerIntervals[interval].label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="mt-6">
-        <h3
-          className="mb-2 text-sm font-medium"
-          style={{ color: themeColors.foreground }}
-        >
-          Line height
-        </h3>
-        <div className="grid grid-cols-3 gap-2">
-          {(Object.keys(readerLineHeights) as ReaderLineHeight[]).map(
-            (lineHeight) => (
-              <button
-                key={lineHeight}
-                type="button"
-                onClick={() => handleLineHeightChange(lineHeight)}
-                className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80"
-                style={{
-                  backgroundColor:
-                    settings.lineHeight === lineHeight
-                      ? themeColors.foreground
-                      : "transparent",
-                  borderColor:
-                    settings.lineHeight === lineHeight
-                      ? themeColors.foreground
-                      : themeColors.muted,
-                  color:
-                    settings.lineHeight === lineHeight
-                      ? themeColors.background
-                      : themeColors.foreground,
-                }}
-              >
-                {readerLineHeights[lineHeight].label}
-              </button>
-            ),
-          )}
+              Word
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {(Object.keys(readerWordIntervals) as ReaderInterval[]).map(
+                (wordInterval) => (
+                  <button
+                    key={wordInterval}
+                    type="button"
+                    onClick={() => handleWordIntervalChange(wordInterval)}
+                    className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80"
+                    style={{
+                      backgroundColor:
+                        settings.wordInterval === wordInterval
+                          ? themeColors.foreground
+                          : "transparent",
+                      borderColor:
+                        settings.wordInterval === wordInterval
+                          ? themeColors.foreground
+                          : themeColors.muted,
+                      color:
+                        settings.wordInterval === wordInterval
+                          ? themeColors.background
+                          : themeColors.foreground,
+                    }}
+                  >
+                    {readerWordIntervals[wordInterval].label}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+          <div>
+            <p
+              className="mb-2 text-xs font-medium"
+              style={{ color: themeColors.muted }}
+            >
+              Letter
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {(Object.keys(readerIntervals) as ReaderInterval[]).map(
+                (interval) => (
+                  <button
+                    key={interval}
+                    type="button"
+                    disabled={isBionicalSelected}
+                    onClick={() => handleIntervalChange(interval)}
+                    className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+                    style={{
+                      backgroundColor:
+                        settings.interval === interval
+                          ? themeColors.foreground
+                          : "transparent",
+                      borderColor:
+                        settings.interval === interval
+                          ? themeColors.foreground
+                          : themeColors.muted,
+                      color:
+                        settings.interval === interval
+                          ? themeColors.background
+                          : themeColors.foreground,
+                    }}
+                  >
+                    {readerIntervals[interval].label}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+          <div>
+            <p
+              className="mb-2 text-xs font-medium"
+              style={{ color: themeColors.muted }}
+            >
+              Line
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {(Object.keys(readerLineHeights) as ReaderLineHeight[]).map(
+                (lineHeight) => (
+                  <button
+                    key={lineHeight}
+                    type="button"
+                    onClick={() => handleLineHeightChange(lineHeight)}
+                    className="cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition-opacity hover:opacity-80"
+                    style={{
+                      backgroundColor:
+                        settings.lineHeight === lineHeight
+                          ? themeColors.foreground
+                          : "transparent",
+                      borderColor:
+                        settings.lineHeight === lineHeight
+                          ? themeColors.foreground
+                          : themeColors.muted,
+                      color:
+                        settings.lineHeight === lineHeight
+                          ? themeColors.background
+                          : themeColors.foreground,
+                    }}
+                  >
+                    {readerLineHeights[lineHeight].label}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
         </div>
       </div>
       <button

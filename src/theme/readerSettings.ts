@@ -16,6 +16,7 @@ export const DEFAULT_READER_SETTINGS: ReaderSettings = {
   interval: ReaderInterval.Normal,
   lineHeight: ReaderLineHeight.Normal,
   view: ReaderView.Pages,
+  wordInterval: ReaderInterval.Normal,
 };
 
 export const MIN_READER_FONT_SIZE = 12;
@@ -56,6 +57,24 @@ export const readerIntervals: Record<ReaderInterval, ReaderIntervalConfig> = {
   },
   [ReaderInterval.Wide]: {
     cssValue: "0.06em",
+    label: "Wide",
+  },
+};
+
+export const readerWordIntervals: Record<
+  ReaderInterval,
+  ReaderIntervalConfig
+> = {
+  [ReaderInterval.Tight]: {
+    cssValue: "0",
+    label: "Tight",
+  },
+  [ReaderInterval.Normal]: {
+    cssValue: "0.08em",
+    label: "Normal",
+  },
+  [ReaderInterval.Wide]: {
+    cssValue: "0.18em",
     label: "Wide",
   },
 };
@@ -145,6 +164,9 @@ export function loadReaderSettings(): ReaderSettings {
       view: isReaderView(storedSettings.view)
         ? storedSettings.view
         : DEFAULT_READER_SETTINGS.view,
+      wordInterval: isReaderInterval(storedSettings.wordInterval)
+        ? storedSettings.wordInterval
+        : DEFAULT_READER_SETTINGS.wordInterval,
     };
   } catch {
     return DEFAULT_READER_SETTINGS;
